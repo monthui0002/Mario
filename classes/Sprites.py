@@ -22,6 +22,7 @@ class Sprites:
         for url in urlList:
             with open(url) as jsonData:
                 jsonData = json.load(jsonData)
+                imgURL = jsonData['url']
                 for data in jsonData['sprites']:
                     # img = pygame.image.load(url)
                     dic = {}  # img và name của ảnh
@@ -32,7 +33,7 @@ class Sprites:
                         subSurface = (sprite['x'], sprite['y'], size[0], size[1] * sprite['scale'])
                         scale = (WIDTH, HEIGHT * sprite['scale'])
                         # image = pygame.transform.scale(image, (WIDTH, HEIGHT*sprites['scale']))
-                        dic[sprite['name']] = [url, subSurface, scale]
+                        dic[sprite['name']] = [imgURL, subSurface, scale]
                     resDict.update(dic)
 
         return resDict

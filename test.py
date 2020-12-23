@@ -46,8 +46,6 @@ while True:
                 up = False
             if event.key == pygame.K_DOWN:
                 down = True
+    mario.updateImage(up,down,right,left,displaySurface,2)
     pygame.display.update()
-    mario.updateImage(up,down,right,left,displaySurface)
-    # fpsClock.tick(FPS)
-    fpsClock.tick(1)
-    print(time.time())
+    fpsClock.tick(FPS)

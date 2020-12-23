@@ -17,7 +17,6 @@ class Mario:
         sprite = spriteCollection['mario_small_stand']
         if up:
             sprite = spriteCollection['mario_small_jump'] if level == 1 else spriteCollection['mario_big_jump']
-            screen.blit(img,(int(self.x), int(self.y)))
         elif down and self.x:
             sprite = spriteCollection['mario_small_stand'] if level == 1 else spriteCollection['mario_big_sit']
         elif right:
@@ -26,8 +25,8 @@ class Mario:
             sprite = spriteCollection['mario_small_run1'] if level == 1 else spriteCollection['mario_big_run1']
         else:
             sprite = spriteCollection['mario_small_stand'] if level == 1 else spriteCollection['mario_big_stand']
-        print("sprite[0]",sprite)
         img = pygame.image.load(sprite[0])
         img = img.subsurface(sprite[1])  # vì con to chỉ x2 chiều cao
-        img = pygame.transform.scale(img, sprite[2] * level)
-        screen.blit(img, (int(self.x), int(self.y)))
+        img = pygame.transform.scale(img, (sprite[2]))
+        self.screen.blit(pygame.transform.flip(img, False, True), (10,10))
+        screen.blit(pygame.transform.flip(img, False, True), (self.x, self.y))
