@@ -3,7 +3,7 @@ from classes.Sprites import Sprites
 from classes.Animation import Animation
 
 spriteCollection = Sprites().spriteCollection
-print(spriteCollection)
+# smallAnimation = Animation()
 
 class Mario:
     def __init__(self, x, y, sound, screen, level=1):
@@ -28,5 +28,5 @@ class Mario:
         img = pygame.image.load(sprite[0])
         img = img.subsurface(sprite[1])  # vì con to chỉ x2 chiều cao
         img = pygame.transform.scale(img, (sprite[2]))
-        self.screen.blit(pygame.transform.flip(img, False, True), (10,10))
-        screen.blit(pygame.transform.flip(img, False, True), (self.x, self.y))
+        img = pygame.transform.flip(img, True, False)
+        screen.blit(img, (int(self.x), int(self.y)))

@@ -1,20 +1,23 @@
 import pygame, sys
 import time
 from classes.Mario import Mario
+from classes.Background import Background
 
 pygame.init()
 FPS = 1
 fpsClock = pygame.time.Clock()
 
-windowSize = (640, 480)
 
 # mario = pygame.image.load('./mario.png')
 # mario = mario.subsurface((80, 34, 16, 16))
 # mario = pygame.transform.scale(mario, (32, 32))
 # DISPLAYSURF.blit(self.img, (int(self.x), int(self.y)))
 
-displaySurface = pygame.display.set_mode(windowSize)
-mario = Mario(0,0,"sound",displaySurface)
+background = Background()
+window_size = (640, 480)
+display_surface = pygame.display.set_mode(window_size)
+bg = pygame.transform.scale(display_surface, background.map_size[1])
+mario = Mario(0,0,"sound",display_surface)
 pygame.display.set_caption('MARIO')
 pygame.init()
 i = 0
@@ -46,6 +49,7 @@ while True:
                 up = False
             if event.key == pygame.K_DOWN:
                 down = True
-    mario.updateImage(up,down,right,left,displaySurface,2)
+    background.draw()
+    mario.updateImage(up,down,right,left,display_surface,2)
     pygame.display.update()
     fpsClock.tick(FPS)

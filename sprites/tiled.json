@@ -1,5 +1,5 @@
 {
-    "ImageURL":"Tileset.png",
+    "ImageURL":"./img/Tileset.png",
     "sprites" :[
         {
             "name":"wall-brown-01",

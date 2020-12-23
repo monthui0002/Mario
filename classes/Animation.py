@@ -17,7 +17,7 @@ class Animation:
                 self.index = 0
         self.image = self.images[self.index]
 
-    def idle(self):
+    def stand(self):
         self.image = self.idleSprite
 
     def inAir(self):
