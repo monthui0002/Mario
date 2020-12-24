@@ -15,23 +15,26 @@ fpsClock = pygame.time.Clock()
 tile_size = 16
 window_size = (25*tile_size, 14*tile_size) #25*14
 
-background = Background()
+x = 0
+y = 0
+background = Background(x,y)
 
 display_surface = pygame.display.set_mode(window_size)
 bg = pygame.transform.scale(display_surface, background.map_size[1])
 pygame.display.set_caption('MARIO')
 
-mario = Mario(0,0,"sound",display_surface)
+mario = Mario(0,0,"sound",display_surface,2)
 
 i = 0
 while True:
     display_surface = pygame.display.set_mode(window_size)
-    background.draw(display_surface)
+    background.update(display_surface,mario)
     # mario.updateImage(display_surface,2)
     mario.update(display_surface)
     # img = pygame.image.load("./img/Tileset.png")
-    # img = img.subsurface(0,0,16,16)
+    # img = img.subsurface(80,144,16,16)
     # img = pygame.transform.scale(img, (16,16))
     # display_surface.blit(img,(16, 112))
     pygame.display.update()
+    # background.x -= 1
     fpsClock.tick(FPS)

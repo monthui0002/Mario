@@ -3,13 +3,15 @@ import pygame, json
 from classes.Tile import Tile
 
 
-windowSize = (640, 480)
+window_size = (400, 224)
 #         screen.blit(img, (int(self.x), int(self.y)))
 tiles = Tile().tiles
 pygame.display.set_caption('MARIO')
-# bg = pygame.display.set_mode(windowSize)
+# bg = pygame.display.set_mode(window_size)
 class Background:
-    def __init__(self):
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
         self.map, self.map_size = self.addMaps([
             "./levels/map1.json",
         ])
@@ -38,9 +40,16 @@ class Background:
             img = img.subsurface(tiles[i][1],tiles[i][2],tiles[i][3][0],tiles[i][3][1])
             load_images[i] = pygame.transform.scale(img, (tiles[i][3][0],tiles[i][3][1]))
         return load_images #dictionary{"name_tiles" : img}
-    def draw(self, screen):
+    def update(self, screen, player):
+        x_camera = player.x - (window_size[0] - player.width)/2
+        if x_camera < 0:
+            x_camera = 0
+        print("player:", player.x, "x_camera:", x_camera)
+        # if x_camera + window_size[0] > self.map_size[self.index][0]:
+        #     x_camera =self.map_size[0] -window_size[self.index][0]
+        self.x = -x_camera
         for tiles_name in self.map:
             for i in self.map[tiles_name]:
-                screen.blit(self.images[tiles_name],(i[0],i[1]))
+                screen.blit(self.images[tiles_name],(i[0] + self.x ,i[1] + self.y))
     # def update(self, screen):
 

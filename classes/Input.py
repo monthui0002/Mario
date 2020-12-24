@@ -13,7 +13,6 @@ class Input:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
                     eventt[0][0] = True
-                    print("right")
                 if event.key == pygame.K_UP:
                     eventt[0][2] = True
                     eventt[0][3] = True
