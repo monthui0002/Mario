@@ -1,4 +1,5 @@
-import pygame,json
+import pygame, json
+
 
 class Tile:
     def __init__(self):
@@ -7,6 +8,7 @@ class Tile:
                 "./sprites/tiled.json"
             ]
         )
+
     def loadTiles(self, urlListTile):
         dic = {}
         for url in urlListTile:
@@ -15,5 +17,5 @@ class Tile:
                 img = data['ImageURL']
                 sprites = data['sprites']
                 for sprite in sprites:
-                    dic[sprite['name']] = [img,sprite['x'],sprite['y'],sprite['size']]
+                    dic[sprite['name']] = [img, sprite['x'], sprite['y'], sprite['size']]
         return dic
