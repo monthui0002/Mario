@@ -1,8 +1,8 @@
 import pygame
 from classes.Input import Input
 
-window_size = (400, 224)
-mario_size = 16
+window_size = (800, 448)
+mario_size = 32
 
 IDLE = 0
 RUN = 1
@@ -40,8 +40,8 @@ class Mario:
         pos_x = 80
         pos_y = 1
         for i in range(0, 22):
-            big_images.append([(pos_x, pos_y, 16, 32), (16, 32)])
-            if i < 14: small_images.append([(pos_x, pos_y + 33, 16, 16), (16, 16)])
+            big_images.append([(pos_x, pos_y, 16, 32), (32, 64)])
+            if i < 14: small_images.append([(pos_x, pos_y + 33, 16, 16), (32, 32)])
             pos_x += 17
         return small_images, big_images
 
@@ -78,7 +78,7 @@ class Mario:
     def turn_right(self):
         global GRAVITY
         self.x += self.speed * GRAVITY
-        self.pos = self.x if self.x < (window_size[0] - 16) / 2 else (window_size[0] - 16) / 2
+        self.pos = self.x if self.x < (window_size[0] - 32) / 2 else (window_size[0] - 32) / 2
         if self.state == RUN:
             if GRAVITY < 1:
                 GRAVITY += 0.005
@@ -88,7 +88,7 @@ class Mario:
     def turn_left(self):
         global GRAVITY
         self.x -= self.speed * GRAVITY
-        self.pos = self.x if self.x < (window_size[0] - 16) / 2 else (window_size[0] - 16) / 2
+        self.pos = self.x if self.x < (window_size[0] - 32) / 2 else (window_size[0] - 32) / 2
         if self.state == RUN:
             if GRAVITY < 1:
                 GRAVITY += 0.005

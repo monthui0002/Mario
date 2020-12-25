@@ -2,7 +2,7 @@ import pygame, json
 
 from classes.Tile import Tile
 
-window_size = (400, 224)
+window_size = (800, 448)
 
 tiles = Tile().tiles
 pygame.display.set_caption('MARIO')
@@ -39,7 +39,7 @@ class Background:
         for i in self.map:
             img = pygame.image.load(tiles[i][0])
             img = img.subsurface(tiles[i][1], tiles[i][2], tiles[i][3][0], tiles[i][3][1])
-            load_images[i] = pygame.transform.scale(img, (tiles[i][3][0], tiles[i][3][1]))
+            load_images[i] = pygame.transform.scale(img, (tiles[i][3][0]*2, tiles[i][3][1]*2))
         return load_images  # dictionary{"name_tiles" : img}
 
     def update(self, screen, player):
@@ -53,5 +53,5 @@ class Background:
         print("player:", player.x, "x_camera:", x_camera)
         for tiles_name in self.map:
             for i in self.map[tiles_name]:
-                screen.blit(self.images[tiles_name], (i[0] + self.x, i[1] + self.y))
+                screen.blit(self.images[tiles_name], (i[0]*2 + self.x, i[1]*2 + self.y))
     # def update(self, screen):

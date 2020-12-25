@@ -5,7 +5,7 @@ from classes.Background import Background
 FPS = 60
 fpsClock = pygame.time.Clock()
 
-tile_size = 16
+tile_size = 32
 window_size = (25 * tile_size, 14 * tile_size)  # 25*14
 
 x = 0
@@ -16,7 +16,7 @@ display_surface = pygame.display.set_mode(window_size)
 bg = pygame.transform.scale(display_surface, background.map_size[1])
 pygame.display.set_caption('MARIO')
 
-mario = Mario(0, 14 * tile_size - 16, "sound", display_surface, 1)
+mario = Mario(0, 14 * tile_size - 32, "sound", display_surface, 1)
 
 i = 0
 index = 0
