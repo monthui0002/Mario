@@ -1,4 +1,102 @@
 import pygame
+
+from classes.Input import get
+
+tile_size = 16
+scale = 2
+window_size = (25 * tile_size * scale, 14 * tile_size * scale)
+
+
+def load_img():
+    small_images = []
+    big_images = []
+    pos_x = 80
+    pos_y = 1
+    for i in range(0, 22):
+        big_images.append([(pos_x, pos_y, 16, 32), (tile_size * scale, tile_size * scale * 2)])
+        if i < 14: small_images.append([(pos_x, pos_y + 33, 16, 16), (tile_size * scale, tile_size * scale)])
+        pos_x += 17
+    return small_images, big_images
+
+
+class Mario:
+    # State
+    IDLE = 1
+    WALK = 2
+    GRASP = 3
+    IN_AIR = 4
+    SIT = 5
+    CLIMB = 6
+    SWIM = 7
+    GROW = 8
+    UNDEFINED = 9
+
+    # Constants
+    STEP = 5
+    DIRECTION_RIGHT = 1
+    DIRECTION_LEFT = -1
+    GRAVITY = .5
+    FALL_SPEED = 3
+    IMAGE = pygame.image.load("./img/mario.png")
+
+    def __init__(self, x, y, direction, level, state, screen):
+        self.x, self.y = x, y
+        self.big_img, self.small_img = load_img()
+        self.direction = direction
+        self.level = level
+        self.state = state
+        self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
+        self.screen = screen
+        self.cur_frame = 0
+        self.cur_fall_speed = Mario.FALL_SPEED
+        self.cur_img = self.small_img
+
+    def get_input(self):
+        self.key_input = get(self.key_input)
+
+    def update(self):
+        self.get_input()
+        self.move()
+        self.render()
+
+    def move(self):
+        moving = self.key_input["Right"] or self.key_input["Left"]
+        if moving:
+            self.x += self.direction * Mario.STEP
+            self.direction = Mario.DIRECTION_LEFT if self.key_input["Left"] else Mario.DIRECTION_RIGHT
+            if self.state == Mario.IDLE:
+                self.state = Mario.WALK
+        if self.state == Mario.IDLE:
+            self.cur_frame = 0
+        elif self.state == Mario.WALK:
+            if moving:
+                if self.cur_frame not in [1, 2, 3]:
+                    self.cur_frame = 1
+                elif self.cur_frame < 3:
+                    self.cur_frame += 1
+                else:
+                    self.cur_frame = 1
+            else:
+                self.state = Mario.IDLE
+        elif self.state == Mario.IN_AIR:
+            self.cur_frame = 5
+            self.y += self.cur_fall_speed
+            self.cur_fall_speed += Mario.GRAVITY
+            land_condition = self.y > 460
+            if land_condition:
+                self.y = 460
+                self.state = Mario.IDLE
+                self.cur_fall_speed = Mario.FALL_SPEED
+
+    def render(self):
+        img = Mario.IMAGE.subsurface(self.cur_img[self.cur_frame][0])
+        if self.direction == Mario.DIRECTION_LEFT:
+            img = pygame.transform.flip(img, True, False)
+        self.screen.blit(pygame.transform.scale(img, self.cur_img[self.cur_frame][1]), (self.x, self.y))
+
+
+"""
+import pygame
 from classes.Input import Input
 
 tile_size = 16
@@ -180,3 +278,4 @@ class Mario:
         if self.y > window_size[1]:
             print("game over")
             return
+"""

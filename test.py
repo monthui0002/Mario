@@ -13,23 +13,17 @@ x = 0
 y = 0
 background = Background(x, y)
 
-display_surface = pygame.display.set_mode(window_size)
-bg = pygame.transform.scale(display_surface, background.map_size[1])
+screen = pygame.display.set_mode(window_size)
+bg = pygame.transform.scale(screen, background.map_size[1])
 pygame.display.set_caption('MARIO')
 
-mario = Mario(0, 14 * tile_size * scale - 32, "sound", display_surface, 1)
+mario = Mario(50, 100, Mario.DIRECTION_RIGHT, 1, Mario.IDLE, screen)
 
 i = 0
 index = 0
 time = 0
-while not mario.pause:
-    display_surface = pygame.display.set_mode(window_size)  # (0,191,255)
-    background.update(display_surface, mario)
-    mario.update(display_surface,background, index)
-    if mario.state == 1 and index < 2.91:
-        index += 0.15
-    else:
-        index = 0
-    time += 1 / 60
+while True:
+    screen.fill((0, 0, 0))
+    mario.update()
     pygame.display.update()
-    fpsClock.tick(60)
+    fpsClock.tick(13)
