@@ -5,6 +5,7 @@ from classes.Input import get
 tile_size = 16
 scale = 2
 window_size = (25 * tile_size * scale, 14 * tile_size * scale)
+FPS = 60
 
 
 def load_img():
@@ -25,14 +26,14 @@ class Mario:
     WALK = 2
     GRASP = 3
     IN_AIR = 4
-    SIT = 5
+    SHRINK = 5
     CLIMB = 6
     SWIM = 7
     GROW = 8
     UNDEFINED = 9
 
     # Constants
-    STEP = 5
+    STEP = 2
     DIRECTION_RIGHT = 1
     DIRECTION_LEFT = -1
     GRAVITY = .5
@@ -41,7 +42,7 @@ class Mario:
 
     def __init__(self, x, y, direction, level, state, screen):
         self.x, self.y = x, y
-        self.big_img, self.small_img = load_img()
+        self.small_img, self.big_img = load_img()
         self.direction = direction
         self.level = level
         self.state = state
@@ -49,7 +50,8 @@ class Mario:
         self.screen = screen
         self.cur_frame = 0
         self.cur_fall_speed = Mario.FALL_SPEED
-        self.cur_img = self.small_img
+        self.cur_img = self.small_img if self.level == 0 else self.big_img
+        self.grow_lvl = 0
 
     def get_input(self):
         self.key_input = get(self.key_input)
@@ -60,20 +62,34 @@ class Mario:
         self.render()
 
     def move(self):
+        if self.key_input["Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
+            self.key_input["Enter"] = False
+            if self.level == 0:
+                self.state = Mario.GROW
+                print("Grow")
+            else:
+                print("Shrink")
+                self.state = Mario.SHRINK
+
         moving = self.key_input["Right"] or self.key_input["Left"]
         if moving:
             self.x += self.direction * Mario.STEP
             self.direction = Mario.DIRECTION_LEFT if self.key_input["Left"] else Mario.DIRECTION_RIGHT
             if self.state == Mario.IDLE:
                 self.state = Mario.WALK
+
+        if self.key_input["Up"] and self.state != Mario.IN_AIR:
+            self.cur_fall_speed = -6 * scale
+            self.state = Mario.IN_AIR
+
         if self.state == Mario.IDLE:
             self.cur_frame = 0
         elif self.state == Mario.WALK:
             if moving:
-                if self.cur_frame not in [1, 2, 3]:
+                if int(self.cur_frame) > 3 or int(self.cur_frame) < 1:
                     self.cur_frame = 1
-                elif self.cur_frame < 3:
-                    self.cur_frame += 1
+                elif int(self.cur_frame + 7 / FPS) <= 3:
+                    self.cur_frame += 7 / FPS
                 else:
                     self.cur_frame = 1
             else:
@@ -82,17 +98,40 @@ class Mario:
             self.cur_frame = 5
             self.y += self.cur_fall_speed
             self.cur_fall_speed += Mario.GRAVITY
-            land_condition = self.y > 460
+            land_condition = self.y > 360
             if land_condition:
-                self.y = 460
+                self.y = 360
                 self.state = Mario.IDLE
                 self.cur_fall_speed = Mario.FALL_SPEED
+        elif self.state == Mario.SWIM:
+            pass
+        elif self.state == Mario.GROW and self.level == 0:
+            self.grow_lvl += 8 / FPS
+            self.cur_img = self.big_img
+            self.cur_frame = 15
+            if int(self.grow_lvl) == 2:
+                self.grow_lvl = 2
+                self.level = 1
+                self.state = Mario.IDLE
+                self.cur_frame = 0
+        elif self.state == Mario.SHRINK:
+            if self.level == 1:
+                self.grow_lvl -= 8 / FPS
+                self.cur_frame = 15
+                if int(self.grow_lvl) == 0:
+                    self.level = 0
+                    self.grow_lvl = 0
+                    self.state = Mario.IDLE
+                    self.cur_frame = 0
+                    self.cur_img = self.small_img
+            else:
+                print("Game over here!")
 
     def render(self):
-        img = Mario.IMAGE.subsurface(self.cur_img[self.cur_frame][0])
+        img = Mario.IMAGE.subsurface(self.cur_img[int(self.cur_frame)][0])
         if self.direction == Mario.DIRECTION_LEFT:
             img = pygame.transform.flip(img, True, False)
-        self.screen.blit(pygame.transform.scale(img, self.cur_img[self.cur_frame][1]), (self.x, self.y))
+        self.screen.blit(pygame.transform.scale(img, self.cur_img[int(self.cur_frame)][1]), (self.x, self.y))
 
 
 """
