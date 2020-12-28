@@ -29,13 +29,15 @@ def add_map(urlListMap):
                     dic[object] = {}
                     for wall_name in list_object[object]:
                         dic[object][wall_name] = list_object[object][wall_name]  # {"wall":{"wall_name":[pos]}}
-                elif object == "animation":
-                    dic[object] = list_object[object]  # {"animation:[[pos1][pos2]...]}
+                elif object == "items":
+                    dic[object] = {}
+                    for items_name in list_object[object]:
+                        dic[object][items_name] = list_object[object][items_name]  # {"items":{"items_name":[pos]}}
                 elif object == "background":
                     dic[object] = {}
-                    for wall_name in list_object[object]:
-                        dic[object][wall_name] = list_object[object][
-                            wall_name]  # {"background":{"background_name":[pos]}}
+                    for background_name in list_object[object]:
+                        dic[object][background_name] = list_object[object][
+                            background_name]  # {"background":{"background_name":[pos]}}
                 res.append(dic)
     return res, map_size,color  # dic{"name_tiles" : [position in map]}
 
@@ -50,7 +52,7 @@ class Background:
         self.index = 1  # defaul map = 1
         self.wall = self.load_wall()
         self.background = self.load_background()
-        self.coin = self.load_coin() # [[pos1],[pos2],..]
+        self.items = self.load_items() # [[pos1],[pos2],..]
 
     def update(self, screen, player):
         self.check_camera(player)
@@ -77,15 +79,17 @@ class Background:
                 load_background[i] = pygame.transform.scale(img, (tiles[i][3][0] * scale, tiles[i][3][1] * scale))
         return load_background  # dictionary{"name_tiles" : img}
 
-    def load_coin(self):
-        coin = []
-        if "animation" in self.map[self.index]:
-            for pos in self.map[self.index]["animation"]:
-                coin.append(Coin(pos[0]*tile_size, pos[1]*tile_size))
-        return coin
+    def load_items(self):
+        items = {}
+        if "items" in self.map[self.index]:
+            img = pygame.image.load('./img/items.png')
+            for item in self.map[self.index]["items"]:
+                print(tiles[item])
+                # coin.append(Coin(pos[0]*tile_size, pos[1]*tile_size))
+        return items
 
     def update_coin(self,tiles,screen):
-        for coin in self.coin:
+        for coin in self.items:
             coin.update(self.x,self.y,tiles,screen)
 
     def update_wall(self,screen):

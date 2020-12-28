@@ -1,5 +1,5 @@
 {
-  "url": "./img/mario.png",
+  "image_url": "./img/mario.png",
   "type": "mario",
   "size": [
     16,

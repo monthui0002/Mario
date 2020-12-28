@@ -62,10 +62,10 @@ class Mario:
         self.move()
         self.check_out_range(background)
         self.render(background)
-        for coin in background.coin:
-            if self.rect_collision(coin):
-                background.coin.remove(coin)
-                print("coin + 1")  # dashboard.coint + 1
+        # for coin in background.coin:
+        #     if self.rect_collision(coin):
+        #         background.coin.remove(coin)
+        #         print("coin + 1")  # dashboard.coint + 1
 
     def move(self):
         if self.key_input["Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
@@ -106,7 +106,7 @@ class Mario:
             self.cur_fall_speed += Mario.GRAVITY
             land_condition = self.y > 360
             if land_condition:
-                self.y = 360
+                self.y = 352
                 self.state = Mario.IDLE
                 self.cur_fall_speed = Mario.FALL_SPEED
         elif self.state == Mario.SWIM:

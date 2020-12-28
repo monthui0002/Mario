@@ -1,17 +1,18 @@
 import pygame
 from entities.Mario import Mario
 from classes.Background import Background
-
+from classes.Dashboard import Dashboard
 FPS = 60
 tile_size = 16
 scale = 2
 fpsClock = pygame.time.Clock()
-
+pygame.font.init()
 window_size = (25 * tile_size * scale, 14 * tile_size * scale)  # 25*14
 
 background = Background(0, 0)
 # "color": "rgb(135,206,250)",
 display_surface = pygame.display.set_mode(window_size)
+dashboard = Dashboard(display_surface)
 bg = pygame.transform.scale(display_surface, background.map_size[1])
 pygame.display.set_caption('MARIO')
 
@@ -22,5 +23,6 @@ while not mario.pause:
     display_surface.fill(background.color[background.index])
     background.update(display_surface, mario)
     mario.update(background)
+    dashboard.update()
     pygame.display.update()
     fpsClock.tick(60)
