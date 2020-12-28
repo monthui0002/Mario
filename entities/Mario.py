@@ -33,7 +33,7 @@ class Mario:
     UNDEFINED = 9
 
     # Constants
-    STEP = 50
+    STEP = 5
     DIRECTION_RIGHT = 1
     DIRECTION_LEFT = -1
     GRAVITY = .5
