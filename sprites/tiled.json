@@ -3,6 +3,18 @@
     "type": "wall",
     "sprites" :[
         {
+            "name":"wall-brown-0",
+            "x":192,
+            "y":16,
+            "size":[16,16]
+        },
+        {
+            "name":"wall-brown-1",
+            "x":224,
+            "y":0,
+            "size":[16,16]
+        },
+        {
             "name":"wall-brown-01",
             "x":0,
             "y":0,
@@ -15,7 +27,7 @@
             "size":[16,16]
         },
         {
-            "name":"wall-brown-02",
+            "name":"wall-brown-03",
             "x":32,
             "y":0,
             "size":[16,16]
@@ -64,7 +76,7 @@
         },
         {
             "name":"wall-brown-11",
-            "x":192,
+            "x":208,
             "y":0,
             "size":[8,16]
         },
@@ -82,7 +94,7 @@
         },
         {
             "name":"question_brown_01",
-            "x":224,
+            "x":240,
             "y":0,
             "size":[16,16]
         },

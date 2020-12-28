@@ -18,7 +18,7 @@ class Background:
         self.x = x
         self.y = y
         self.map, self.map_size = self.add_map([
-            "./levels/map1_2.json",
+            "./levels/map1_1.json",
         ])
         self.index = 1  # defaul map = 1
         self.wall = self.load_wall()
