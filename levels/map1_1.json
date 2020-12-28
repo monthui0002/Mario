@@ -1,0 +1,15 @@
+{
+  "id": 0,
+  "width": 60,
+  "height": 15,
+  "object": {
+    "wall": {
+      "wall-brown-01": [
+        [15,0]
+      ]
+    },
+    "animation": [
+      [1,1]
+    ]
+  }
+}

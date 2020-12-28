@@ -22,8 +22,12 @@ class Background:
         ])
         self.index = 1  # defaul map = 1
         self.wall = self.load_wall()
-        self.coin = self.load_coint() # [[pos1],[pos2],..]
+        self.coin = self.load_coin() # [[pos1],[pos2],..]
 
+    def update(self, screen, player):
+        self.check_camera(player)
+        self.update_wall(screen)
+        self.update_coin(tiles,screen)
 
     def add_map(self, urlListMap):
         dic = {}
@@ -53,11 +57,6 @@ class Background:
             load_wall[i] = pygame.transform.scale(img, (tiles[i][3][0] * scale, tiles[i][3][1] * scale))
         return load_wall  # dictionary{"name_tiles" : img}
 
-    def update(self, screen, player):
-        self.check_camera(player)
-        self.update_wall(screen)
-        self.update_coint(tiles,screen)
-
     def check_camera(self, player):
         x_camera = player.x - (window_size[0] - tile_size * scale) / 2
         if x_camera < 0:
@@ -66,15 +65,16 @@ class Background:
             x_camera = self.map_size[self.index][0] * scale - window_size[0]
         self.x = -x_camera
 
-    def load_coint(self):
+    def load_coin(self):
         coin = []
         for pos in self.map["animation"]:
             coin.append(Coin(pos[0], pos[1]))
         return coin
-    def update_coint(self,tiles,screen):
+    def update_coin(self,tiles,screen):
         for coin in self.coin:
             coin.update(self.x,self.y,tiles,screen)
     def update_wall(self,screen):
         for tiles_name in self.map["wall"]:
             for i in self.map["wall"][tiles_name]:
+                print(i)
                 screen.blit(self.wall[tiles_name], (i[0] * scale + self.x, i[1] * scale + self.y))

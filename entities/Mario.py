@@ -4,7 +4,7 @@ from classes.Input import get
 
 tile_size = 16
 scale = 2
-window_size = (25 * tile_size * scale, 14 * tile_size * scale)
+w, h = (25 * tile_size * scale, 14 * tile_size * scale)
 FPS = 60
 
 
@@ -21,7 +21,7 @@ def load_img():
 
 
 class Mario:
-    # State
+    # States
     IDLE = 1
     WALK = 2
     GRASP = 3
@@ -33,7 +33,7 @@ class Mario:
     UNDEFINED = 9
 
     # Constants
-    STEP = 3
+    STEP = 5
     DIRECTION_RIGHT = 1
     DIRECTION_LEFT = -1
     GRAVITY = .5
@@ -57,20 +57,20 @@ class Mario:
     def get_input(self):
         self.key_input = get(self.key_input)
 
-    def update(self,background):
+    def update(self, background):
         self.get_input()
         self.move()
-        self.render(background)
         self.check_out_range(background)
+        self.render(background)
         for coin in background.coin:
             if self.rect_collision(coin):
                 background.coin.remove(coin)
-                print("coint + 1") #dashboard.coint + 1
+                print("coin + 1")  # dashboard.coint + 1
 
     def move(self):
         if self.key_input["Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
             self.key_input["Enter"] = False
-            if self.level == 0:
+            if self.level == 1:
                 self.state = Mario.GROW
                 print("Grow")
             else:
@@ -111,21 +111,21 @@ class Mario:
                 self.cur_fall_speed = Mario.FALL_SPEED
         elif self.state == Mario.SWIM:
             pass
-        elif self.state == Mario.GROW and self.level == 0:
+        elif self.state == Mario.GROW and self.level == 1:
             self.grow_lvl += 8 / FPS
             self.cur_img = self.big_img
             self.cur_frame = 15
             if int(self.grow_lvl) == 2:
                 self.grow_lvl = 2
-                self.level = 1
+                self.level = 2
                 self.state = Mario.IDLE
                 self.cur_frame = 0
         elif self.state == Mario.SHRINK:
-            if self.level == 1:
+            if self.level == 2:
                 self.grow_lvl -= 8 / FPS
                 self.cur_frame = 15
                 if int(self.grow_lvl) == 0:
-                    self.level = 0
+                    self.level = 1
                     self.grow_lvl = 0
                     self.state = Mario.IDLE
                     self.cur_frame = 0
@@ -133,29 +133,32 @@ class Mario:
             else:
                 print("Game over here!")
 
-    def render(self,background):
+    def render(self, background):
         img = Mario.IMAGE.subsurface(self.cur_img[int(self.cur_frame)][0])
         if self.direction == Mario.DIRECTION_LEFT:
             img = pygame.transform.flip(img, True, False)
-        if self.x <= (window_size[0] - tile_size * scale) / 2:
+        if self.x <= (w - tile_size * scale) / 2:
             pos_x = self.x
-        elif self.x + (window_size[0] + tile_size * scale) / 2 >= background.map_size[background.index][0] * scale:
-            pos_x = window_size[0] - (background.map_size[background.index][0] * scale - self.x)
+        elif self.x + (w + tile_size * scale) / 2 >= background.map_size[background.index][0] * scale:
+            pos_x = w - abs(background.map_size[background.index][0] * scale - self.x)
         else:
-            pos_x = (window_size[0] - tile_size * scale) / 2
-        self.screen.blit(pygame.transform.scale(img,(tile_size*scale,tile_size*scale*self.level)), (pos_x, self.y))
+            pos_x = (w - tile_size * scale) / 2
+        print(pos_x)
+        self.screen.blit(pygame.transform.scale(img, (tile_size * scale, tile_size * scale * self.level)),
+                         (pos_x, self.y))
 
     def check_out_range(self, background):
         if self.x < 0:
             self.x = 0
-        if self.x >= background.map_size[background.index][0] * scale:
-            self.x = background.map_size[background.index][0] * scale
-        if self.y > window_size[1]:
+        if self.x + tile_size * scale >= background.map_size[background.index][0] * scale:
+            self.x = background.map_size[background.index][0] * scale - tile_size * scale
+        if self.y > h:
             print("game over")
             return
-    def rect_collision(self, entities, size_entities = [8 *scale,14 *scale]):
-        rect1 = [self.x,self.y,tile_size*scale,tile_size*scale*self.level]
-        rect2 = [entities.x, entities.y, size_entities[0],size_entities[1]]
+
+    def rect_collision(self, entities, size_entities=[8 * scale, 14 * scale]):
+        rect1 = [self.x, self.y, tile_size * scale, tile_size * scale * self.level]
+        rect2 = [entities.x, entities.y, size_entities[0], size_entities[1]]
         if rect1[0] <= rect2[0] + rect2[2] and rect2[0] <= rect1[0] + rect1[2] and rect1[1] <= rect2[1] + rect2[3] and \
                 rect2[1] <= rect1[1] + rect1[3]:
             return True
