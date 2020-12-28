@@ -18,7 +18,7 @@ class Background:
         self.x = x
         self.y = y
         self.map, self.map_size = self.add_map([
-            "./levels/map1.json",
+            "./levels/map1_2.json",
         ])
         self.index = 1  # defaul map = 1
         self.wall = self.load_wall()
@@ -35,15 +35,15 @@ class Background:
         for url in urlListMap:
             with open(url) as jsonData:
                 map = json.load(jsonData)
-                map_size.append((map['length-x'], map['length-y']))
-                listObject = map['object']
-                for object in listObject:
+                map_size.append((map['lengthx']*tile_size*scale, map['lengthy']*tile_size*scale))
+                list_object = map['object']
+                for object in list_object:
                     if object == "wall":
                         dic[object] = {}
-                        for wall_name in listObject[object]:
-                            dic[object][wall_name] = listObject[object][wall_name]  # {"wall":{"wall_name":[pos]}}
+                        for wall_name in list_object[object]:
+                            dic[object][wall_name] = list_object[object][wall_name]  # {"wall":{"wall_name":[pos]}}
                     elif object == "animation":
-                        dic[object] = listObject[object]  # {"animation:[[pos1][pos2]...]}
+                        dic[object] = list_object[object]  # {"animation:[[pos1][pos2]...]}
         return dic, map_size  # dic{"name_tiles" : [position in map]}
 
     def load_wall(self):
@@ -61,14 +61,14 @@ class Background:
         x_camera = player.x - (window_size[0] - tile_size * scale) / 2
         if x_camera < 0:
             x_camera = 0
-        if x_camera + window_size[0] >= self.map_size[self.index][0] * scale:
-            x_camera = self.map_size[self.index][0] * scale - window_size[0]
+        if x_camera + window_size[0] >= self.map_size[self.index][0]:
+            x_camera = self.map_size[self.index][0] - window_size[0]
         self.x = -x_camera
 
     def load_coin(self):
         coin = []
         for pos in self.map["animation"]:
-            coin.append(Coin(pos[0], pos[1]))
+            coin.append(Coin(pos[0]*tile_size, pos[1]*tile_size))
         return coin
     def update_coin(self,tiles,screen):
         for coin in self.coin:
@@ -76,5 +76,4 @@ class Background:
     def update_wall(self,screen):
         for tiles_name in self.map["wall"]:
             for i in self.map["wall"][tiles_name]:
-                print(i)
-                screen.blit(self.wall[tiles_name], (i[0] * scale + self.x, i[1] * scale + self.y))
+                screen.blit(self.wall[tiles_name], (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))

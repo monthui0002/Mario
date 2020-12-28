@@ -33,7 +33,7 @@ class Mario:
     UNDEFINED = 9
 
     # Constants
-    STEP = 5
+    STEP = 20
     DIRECTION_RIGHT = 1
     DIRECTION_LEFT = -1
     GRAVITY = .5
@@ -139,19 +139,18 @@ class Mario:
             img = pygame.transform.flip(img, True, False)
         if self.x <= (w - tile_size * scale) / 2:
             pos_x = self.x
-        elif self.x + (w + tile_size * scale) / 2 >= background.map_size[background.index][0] * scale:
-            pos_x = w - abs(background.map_size[background.index][0] * scale - self.x)
+        elif self.x + (w + tile_size * scale) / 2 >= background.map_size[background.index][0]:
+            pos_x = w - (background.map_size[background.index][0] - self.x)
         else:
             pos_x = (w - tile_size * scale) / 2
-        print(pos_x)
         self.screen.blit(pygame.transform.scale(img, (tile_size * scale, tile_size * scale * self.level)),
                          (pos_x, self.y))
 
     def check_out_range(self, background):
         if self.x < 0:
             self.x = 0
-        if self.x + tile_size * scale >= background.map_size[background.index][0] * scale:
-            self.x = background.map_size[background.index][0] * scale - tile_size * scale
+        if self.x + tile_size * scale >= background.map_size[background.index][0]:
+            self.x = background.map_size[background.index][0] - tile_size * scale
         if self.y > h:
             print("game over")
             return
