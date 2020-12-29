@@ -104,11 +104,17 @@ class Mario:
             self.cur_frame = 5
             self.y += self.cur_fall_speed
             self.cur_fall_speed += Mario.GRAVITY
-            land_condition = self.y > 360
+            land_condition = self.y > h - tile_size*scale*(2 if self.level ==1 else 1)
             if land_condition:
-                self.y = 352
+                if self.level == 0:
+                    print("game over! ngu lon chua")
+                else:
+                    self.state = Mario.SHRINK
+                    self.x = 0
+                    self.y = 0
                 self.state = Mario.IDLE
                 self.cur_fall_speed = Mario.FALL_SPEED
+
         elif self.state == Mario.SWIM:
             pass
         elif self.state == Mario.GROW and self.level == 0:
@@ -118,7 +124,8 @@ class Mario:
             if int(self.grow_lvl) == 2:
                 self.grow_lvl = 2
                 self.level = 1
-                self.state = Mario.IDLE
+                self.state = Mario.IN_AIR
+                self.y -= tile_size*scale
                 self.cur_frame = 0
         elif self.state == Mario.SHRINK:
             if self.level == 1:
@@ -127,7 +134,8 @@ class Mario:
                 if int(self.grow_lvl) == 0:
                     self.level = 0
                     self.grow_lvl = 0
-                    self.state = Mario.IDLE
+                    self.state = Mario.IN_AIR
+                    self.y += tile_size*scale
                     self.cur_frame = 0
                     self.cur_img = self.small_img
             else:
@@ -151,9 +159,6 @@ class Mario:
             self.x = 0
         if self.x + tile_size * scale >= background.map_size[background.index][0]:
             self.x = background.map_size[background.index][0] - tile_size * scale
-        if self.y > h:
-            print("game over")
-            return
 
     def rect_collision(self, entities, size_entities=[8 * scale, 14 * scale]):
         rect1 = [self.x, self.y, tile_size * scale, tile_size * scale]
