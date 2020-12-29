@@ -70,7 +70,7 @@ class Mario:
     def move(self):
         if self.key_input["Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
             self.key_input["Enter"] = False
-            if self.level == 1:
+            if self.level == 0:
                 self.state = Mario.GROW
                 print("Grow")
             else:
@@ -111,21 +111,21 @@ class Mario:
                 self.cur_fall_speed = Mario.FALL_SPEED
         elif self.state == Mario.SWIM:
             pass
-        elif self.state == Mario.GROW and self.level == 1:
+        elif self.state == Mario.GROW and self.level == 0:
             self.grow_lvl += 8 / FPS
             self.cur_img = self.big_img
             self.cur_frame = 15
             if int(self.grow_lvl) == 2:
                 self.grow_lvl = 2
-                self.level = 2
+                self.level = 1
                 self.state = Mario.IDLE
                 self.cur_frame = 0
         elif self.state == Mario.SHRINK:
-            if self.level == 2:
+            if self.level == 1:
                 self.grow_lvl -= 8 / FPS
                 self.cur_frame = 15
                 if int(self.grow_lvl) == 0:
-                    self.level = 1
+                    self.level = 0
                     self.grow_lvl = 0
                     self.state = Mario.IDLE
                     self.cur_frame = 0
@@ -143,7 +143,7 @@ class Mario:
             pos_x = w - (background.map_size[background.index][0] - self.x)
         else:
             pos_x = (w - tile_size * scale) / 2
-        self.screen.blit(pygame.transform.scale(img, (tile_size * scale, tile_size * scale * self.level)),
+        self.screen.blit(pygame.transform.scale(img, (tile_size * scale, tile_size * scale * (2 if self.level == 1 else 1))),
                          (pos_x, self.y))
 
     def check_out_range(self, background):
@@ -156,7 +156,7 @@ class Mario:
             return
 
     def rect_collision(self, entities, size_entities=[8 * scale, 14 * scale]):
-        rect1 = [self.x, self.y, tile_size * scale, tile_size * scale * self.level]
+        rect1 = [self.x, self.y, tile_size * scale, tile_size * scale]
         rect2 = [entities.x, entities.y, size_entities[0], size_entities[1]]
         if rect1[0] <= rect2[0] + rect2[2] and rect2[0] <= rect1[0] + rect1[2] and rect1[1] <= rect2[1] + rect2[3] and \
                 rect2[1] <= rect1[1] + rect1[3]:

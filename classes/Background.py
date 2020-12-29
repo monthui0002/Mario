@@ -1,6 +1,7 @@
 import pygame, json
 
 from classes.Tile import Tile
+from classes.Dashboard import Dashboard
 from entities.Coin import Coin
 
 FPS = 60
@@ -43,22 +44,26 @@ def add_map(urlListMap):
 
 
 class Background:
-    def __init__(self, x, y):
+    def __init__(self, x, y, screen):
         self.x = x
         self.y = y
         self.map, self.map_size,self.color = add_map([
             "./levels/map1_1.json",
+            "./levels/bonus_area_1_1.json"
         ])
         self.index = 1  # defaul map = 1
         self.wall = self.load_wall()
         self.background = self.load_background()
         self.items = self.load_items() # [[pos1],[pos2],..]
+        self.screen = screen
+        self.dashboard = Dashboard(screen)
 
-    def update(self, screen, player):
+    def update(self, player):
         self.check_camera(player)
-        self.update_wall(screen)
-        self.update_background(screen)
-        self.update_coin(tiles,screen)
+        self.update_wall()
+        self.update_background()
+        self.update_coin(tiles)
+        self.dashboard.update()
 
     def load_wall(self):
         load_wall = {}
@@ -70,7 +75,7 @@ class Background:
                 load_wall[i] = pygame.transform.scale(img, (tiles[i][3][0] * scale, tiles[i][3][1] * scale))
         return load_wall  # dictionary{"name_tiles" : img}
 
-    def load_background(self,):
+    def load_background(self):
         load_background = {}
         if "background" in self.map[self.index]:
             for i in self.map[self.index]["background"]:
@@ -88,19 +93,19 @@ class Background:
                 # coin.append(Coin(pos[0]*tile_size, pos[1]*tile_size))
         return items
 
-    def update_coin(self,tiles,screen):
+    def update_coin(self,tiles):
         for coin in self.items:
-            coin.update(self.x,self.y,tiles,screen)
+            coin.update(self.x,self.y,tiles,self.screen)
 
-    def update_wall(self,screen):
+    def update_wall(self):
         for tiles_name in self.map[self.index]["wall"]:
             for i in self.map[self.index]["wall"][tiles_name]:
-                screen.blit(self.wall[tiles_name], (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
+                self.screen.blit(self.wall[tiles_name], (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
 
-    def update_background(self,screen):
+    def update_background(self):
         for tiles_name in self.map[self.index]["background"]:
             for i in self.map[self.index]["background"][tiles_name]:
-                screen.blit(self.background[tiles_name], (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
+                self.screen.blit(self.background[tiles_name], (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
 
     def check_camera(self, player):
         x_camera = player.x - (window_size[0] - tile_size * scale) / 2
