@@ -17,11 +17,14 @@ class Tile:
             dic = {}
             with open(url) as url:
                 data = json.load(url)
-                if data["type"] == "wall":
+                if data["type"] == "tile":
                     img = data["image_url"]
                     sprites = data["sprites"]
-                    for sprite in sprites:
-                        dic[sprite["name"]] = [img, sprite['x'], sprite['y'], sprite['size']]
+                    for type in sprites:
+                        for data in sprites[type]:
+                            dic[data["name"]] = [img,data["x"],data["y"],data["size"]]
+                    # for sprite in sprites:
+                    #     dic[sprite["name"]] = [img, sprite['x'], sprite['y'], sprite['size']]
                 elif data["type"] == "animation" or data["type"] == "items":
                     img = data["image_url"]
                     sprites = data["sprites"]

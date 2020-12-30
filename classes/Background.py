@@ -27,20 +27,20 @@ def add_map(urlListMap):
             color.append(map["color"])
             list_object = map['object']
             for object in list_object:
-                if object == "wall":
-                    dic[object] = {}
-                    for wall_name in list_object[object]:
-                        dic[object][wall_name] = list_object[object][wall_name]  # {"wall":{"wall_name":[pos]}}
-                elif object == "items":
+                if object == "animation":
                     dic[object] = {}
                     for items_name in list_object[object]:
-                        dic[object][items_name] = list_object[object][items_name]  # {"items":{"items_name":[pos]}}
-                elif object == "background" or object == "ground":
+                        dic[object][items_name] = list_object[object][items_name]  # {"animation":{"items_name":[pos]}}
+                elif object == "background" or object == "ground" or object == "stone":
                     dic[object] = {}
                     for background_name in list_object[object]:
-                        dic[object][background_name] = list_object[object][
-                            background_name]  # {"background":{"background_name":[pos]}}
+                        dic[object][background_name] = list_object[object][background_name]  # {"background":{"background_name":[pos]}}
+                elif object == "reactable":
+                    dic[object] = {}
+                    for reactable_name in list_object[object]:
+                        dic[object][reactable_name] = list_object[object][reactable_name]
                 res.append(dic)
+
     return res, map_size, color  # dic{"name_tiles" : [position in map]}
 
 
@@ -54,31 +54,34 @@ class Background:
             "./levels/bonus_area_1_1.json"
         ])
         self.index = 1  # defaul map = 1
-        self.wall = self.load_wall()
+        # self.wall = self.load_wall()
         self.ground = self.load_ground()
-        self.background = self.load_background()
+        self.background_and_stone = self.load_background_and_stone()
+        self.reactable = self.load_reactable()
         self.items = self.load_items()  # [[pos1],[pos2],..]
         self.screen = screen
         self.dashboard = Dashboard(screen)
 
     def update(self, player):
         self.check_camera(player)
-        self.update_wall()
-        self.update_background()
+        self.update_background_and_stone()
         self.update_ground()
+        self.update_reactable()
         self.update_coin(tiles)
         self.dashboard.update()
         self.check_on_ground(player)
 
-    def load_wall(self):
-        load_wall = {}
-        if "wall" in self.map[self.index]:
-            # img = pygame.image.load("./img/Tileset.png")
-            for i in self.map[self.index]["wall"]:
-                img = pygame.image.load(tiles[i][0])
-                img = img.subsurface(tiles[i][1], tiles[i][2], tiles[i][3][0], tiles[i][3][1])
-                load_wall[i] = pygame.transform.scale(img, (tiles[i][3][0] * scale, tiles[i][3][1] * scale))
-        return load_wall  # dictionary{"name_tiles" : img}
+    def load_reactable(self):
+        load_reactable = {}
+        if "reactable" in self.map[self.index]:
+            for type in self.map[self.index]["reactable"]:
+                for i in self.map[self.index]["reactable"][type]:
+                    img = pygame.image.load(tiles[type][0])
+                    img = img.subsurface(tiles[type][1], tiles[type][2], tiles[type][3][0], tiles[type][3][1])
+                    load_reactable[type] = pygame.transform.scale(img, (
+                    tiles[type][3][0] * scale, tiles[type][3][1] * scale))
+        return load_reactable  # dictionary{"name_tiles" : img}
+
 
     def load_ground(self):
         load_ground = {}
@@ -87,24 +90,31 @@ class Background:
                 img = pygame.image.load(tiles[i][0])
                 img = img.subsurface(tiles[i][1], tiles[i][2], tiles[i][3][0], tiles[i][3][1])
                 load_ground[i] = pygame.transform.scale(img, (tiles[i][3][0] * scale, tiles[i][3][1] * scale))
-        print("load_ground", load_ground)
         return load_ground  # dictionary{"name_tiles" : img}
 
-    def load_background(self):
-        load_background = {}
+    def load_background_and_stone(self):
+        load_background_and_stone = {}
         if "background" in self.map[self.index]:
-            for i in self.map[self.index]["background"]:
-                img = pygame.image.load(tiles[i][0])
-                img = img.subsurface(tiles[i][1], tiles[i][2], tiles[i][3][0], tiles[i][3][1])
-                load_background[i] = pygame.transform.scale(img, (tiles[i][3][0] * scale, tiles[i][3][1] * scale))
-        return load_background  # dictionary{"name_tiles" : img}
+            for type in self.map[self.index]["background"]:
+                for i in self.map[self.index]["background"][type]:
+                    img = pygame.image.load(tiles[type][0])
+                    img = img.subsurface(tiles[type][1], tiles[type][2], tiles[type][3][0], tiles[type][3][1])
+                    load_background_and_stone[type] = pygame.transform.scale(img, (tiles[type][3][0] * scale, tiles[type][3][1] * scale))
+        if "stone" in self.map[self.index]:
+            for type in self.map[self.index]["stone"]:
+                for i in self.map[self.index]["stone"][type]:
+                    img = pygame.image.load(tiles[type][0])
+                    img = img.subsurface(tiles[type][1], tiles[type][2], tiles[type][3][0], tiles[type][3][1])
+                    load_background_and_stone[type] = pygame.transform.scale(img, (
+                    tiles[type][3][0] * scale, tiles[type][3][1] * scale))
+        return load_background_and_stone  # dictionary{"name_tiles" : img}
 
     def load_items(self):
         items = {}
-        if "items" in self.map[self.index]:
+        if "animation" in self.map[self.index]:
             img = pygame.image.load('./img/items.png')
-            for item in self.map[self.index]["items"]:
-                print(tiles[item])
+            for item in self.map[self.index]["animation"]:
+                print("tiles[item]",tiles[item])
                 # coin.append(Coin(pos[0]*tile_size, pos[1]*tile_size))
         return items
 
@@ -112,11 +122,11 @@ class Background:
         for coin in self.items:
             coin.update(self.x, self.y, tiles, self.screen)
 
-    def update_wall(self):
-        if "wall" in self.map[self.index]:
-            for tiles_name in self.map[self.index]["wall"]:
-                for i in self.map[self.index]["wall"][tiles_name]:
-                    self.screen.blit(self.wall[tiles_name],
+    def update_reactable(self):
+        if "reactable" in self.map[self.index]:
+            for tiles_name in self.map[self.index]["reactable"]:
+                for i in self.map[self.index]["reactable"][tiles_name]:
+                    self.screen.blit(self.reactable[tiles_name],
                                      (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
 
     def update_ground(self):
@@ -128,11 +138,16 @@ class Background:
                             self.screen.blit(self.ground[tiles_name],
                                              (x * tile_size * scale + self.x, y * tile_size * scale + self.y))
 
-    def update_background(self):
+    def update_background_and_stone(self):
         if "background" in self.map[self.index]:
             for tiles_name in self.map[self.index]["background"]:
                 for i in self.map[self.index]["background"][tiles_name]:
-                    self.screen.blit(self.background[tiles_name],
+                    self.screen.blit(self.background_and_stone[tiles_name],
+                                     (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
+        if "stone" in self.map[self.index]:
+            for tiles_name in self.map[self.index]["stone"]:
+                for i in self.map[self.index]["stone"][tiles_name]:
+                    self.screen.blit(self.background_and_stone[tiles_name],
                                      (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
 
     def check_camera(self, player):
