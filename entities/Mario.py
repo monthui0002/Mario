@@ -104,7 +104,7 @@ class Mario:
             self.cur_frame = 5
             self.y += self.cur_fall_speed
             self.cur_fall_speed += Mario.GRAVITY
-            land_condition = self.y > h - tile_size*scale*(2 if self.level ==1 else 1)
+            land_condition = self.y > h - tile_size * scale * (2 if self.level == 1 else 1)
             if land_condition:
                 if self.level == 0:
                     print("game over! ngu lon chua")
@@ -117,15 +117,16 @@ class Mario:
 
         elif self.state == Mario.SWIM:
             pass
-        elif self.state == Mario.GROW and self.level == 0:
+        elif self.state == Mario.GROW and self.grow_lvl < 2:
+            if self.grow_lvl == 0:
+                self.y -= tile_size * scale
             self.grow_lvl += 8 / FPS
             self.cur_img = self.big_img
             self.cur_frame = 15
+            self.level = 1
             if int(self.grow_lvl) == 2:
                 self.grow_lvl = 2
-                self.level = 1
                 self.state = Mario.IN_AIR
-                self.y -= tile_size*scale
                 self.cur_frame = 0
         elif self.state == Mario.SHRINK:
             if self.level == 1:
@@ -135,7 +136,7 @@ class Mario:
                     self.level = 0
                     self.grow_lvl = 0
                     self.state = Mario.IN_AIR
-                    self.y += tile_size*scale
+                    self.y += tile_size * scale
                     self.cur_frame = 0
                     self.cur_img = self.small_img
             else:
@@ -151,8 +152,9 @@ class Mario:
             pos_x = w - (background.map_size[background.index][0] - self.x)
         else:
             pos_x = (w - tile_size * scale) / 2
-        self.screen.blit(pygame.transform.scale(img, (tile_size * scale, tile_size * scale * (2 if self.level == 1 else 1))),
-                         (pos_x, self.y))
+        self.screen.blit(
+            pygame.transform.scale(img, (tile_size * scale, tile_size * scale * (2 if self.level == 1 else 1))),
+            (pos_x, self.y))
 
     def check_out_range(self, background):
         if self.x < 0:
