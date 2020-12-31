@@ -1,18 +1,17 @@
-import pygame, json
+import json
 
-from classes.Tile import Tile
+import pygame
+
 from classes.Dashboard import Dashboard
+from classes.Tile import Tile
 from entities.Mario import Mario
-from entities.Coin import Coin
 
 FPS = 60
-
 tile_size = 16
 scale = 2
-window_size = (25 * tile_size * scale, 14 * tile_size * scale)
+w, h = (25 * tile_size * scale, 14 * tile_size * scale)
 
 tiles = Tile().tiles
-pygame.display.set_caption('MARIO')
 
 
 def add_map(urlListMap):
@@ -34,7 +33,8 @@ def add_map(urlListMap):
                 elif object == "background" or object == "ground" or object == "stone":
                     dic[object] = {}
                     for background_name in list_object[object]:
-                        dic[object][background_name] = list_object[object][background_name]  # {"background":{"background_name":[pos]}}
+                        dic[object][background_name] = list_object[object][
+                            background_name]  # {"background":{"background_name":[pos]}}
                 elif object == "reactable":
                     dic[object] = {}
                     for reactable_name in list_object[object]:
@@ -79,9 +79,8 @@ class Background:
                     img = pygame.image.load(tiles[type][0])
                     img = img.subsurface(tiles[type][1], tiles[type][2], tiles[type][3][0], tiles[type][3][1])
                     load_reactable[type] = pygame.transform.scale(img, (
-                    tiles[type][3][0] * scale, tiles[type][3][1] * scale))
+                        tiles[type][3][0] * scale, tiles[type][3][1] * scale))
         return load_reactable  # dictionary{"name_tiles" : img}
-
 
     def load_ground(self):
         load_ground = {}
@@ -99,23 +98,26 @@ class Background:
                 for i in self.map[self.index]["background"][type]:
                     img = pygame.image.load(tiles[type][0])
                     img = img.subsurface(tiles[type][1], tiles[type][2], tiles[type][3][0], tiles[type][3][1])
-                    load_background_and_stone[type] = pygame.transform.scale(img, (tiles[type][3][0] * scale, tiles[type][3][1] * scale))
+                    load_background_and_stone[type] = pygame.transform.scale(img, (
+                        tiles[type][3][0] * scale, tiles[type][3][1] * scale))
         if "stone" in self.map[self.index]:
             for type in self.map[self.index]["stone"]:
                 for i in self.map[self.index]["stone"][type]:
                     img = pygame.image.load(tiles[type][0])
                     img = img.subsurface(tiles[type][1], tiles[type][2], tiles[type][3][0], tiles[type][3][1])
                     load_background_and_stone[type] = pygame.transform.scale(img, (
-                    tiles[type][3][0] * scale, tiles[type][3][1] * scale))
+                        tiles[type][3][0] * scale, tiles[type][3][1] * scale))
         return load_background_and_stone  # dictionary{"name_tiles" : img}
 
     def load_items(self):
         items = {}
         if "animation" in self.map[self.index]:
             img = pygame.image.load('./img/items.png')
+            """
             for item in self.map[self.index]["animation"]:
-                print("tiles[item]",tiles[item])
-                # coin.append(Coin(pos[0]*tile_size, pos[1]*tile_size))
+                print("tiles[item]", tiles[item])
+                coin.append(Coin(pos[0]*tile_size, pos[1]*tile_size))
+            """
         return items
 
     def update_coin(self, tiles):
@@ -151,24 +153,23 @@ class Background:
                                      (i[0] * tile_size * scale + self.x, i[1] * tile_size * scale + self.y))
 
     def check_camera(self, player):
-        x_camera = player.x - (window_size[0] - tile_size * scale) / 2
+        x_camera = player.x - (w - tile_size * scale) / 2
         if x_camera < 0:
             x_camera = 0
-        if x_camera + window_size[0] >= self.map_size[self.index][0]:
-            x_camera = self.map_size[self.index][0] - window_size[0]
+        if x_camera + w >= self.map_size[self.index][0]:
+            x_camera = self.map_size[self.index][0] - w
         self.x = -x_camera
 
     def check_on_ground(self, player):
-        # [x, y, width, height]
         if "ground" in self.map[self.index]:
             for ground_name in self.map[self.index]["ground"]:
                 on_ground, rect = rect_collision(player, self.map[self.index]["ground"][ground_name])
                 if on_ground:
                     player.y = rect[1] * tile_size * scale - tile_size * scale * (2 if player.level == 1 else 1)
-                    if player.state == Mario.IN_AIR:  # IN_AIR
-                        player.state = Mario.IDLE  # IDLE
+                    if player.state == Mario.IN_AIR:
+                        player.state = Mario.IDLE
                 else:
-                    if player.state != Mario.IN_AIR:  # IN_AIR
+                    if player.state != Mario.IN_AIR:
                         print("roi")
 
 

@@ -15,7 +15,8 @@ def load_img():
     pos_y = 1
     for i in range(0, 22):
         big_images.append([(pos_x, pos_y, 16, 32), (tile_size * scale, tile_size * scale * 2)])
-        if i < 14: small_images.append([(pos_x, pos_y + 33, 16, 16), (tile_size * scale, tile_size * scale)])
+        if i < 14:
+            small_images.append([(pos_x, pos_y + 33, 16, 16), (tile_size * scale, tile_size * scale)])
         pos_x += 17
     return small_images, big_images
 
@@ -24,7 +25,7 @@ class Mario:
     # States
     IDLE = 1
     WALK = 2
-    GRASP = 3
+    BREAK = 3
     IN_AIR = 4
     SHRINK = 5
     CLIMB = 6
@@ -65,7 +66,7 @@ class Mario:
         # for coin in background.coin:
         #     if self.rect_collision(coin):
         #         background.coin.remove(coin)
-        #         print("coin + 1")  # dashboard.coint + 1
+        #         print("coin + 1")  # dashboard.coin + 1
 
     def move(self):
         if self.key_input["Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
@@ -126,7 +127,7 @@ class Mario:
             self.level = 1
             if int(self.grow_lvl) == 2:
                 self.grow_lvl = 2
-                self.state = Mario.IN_AIR
+                self.state = Mario.IDLE
                 self.cur_frame = 0
         elif self.state == Mario.SHRINK:
             if self.level == 1:
@@ -135,7 +136,7 @@ class Mario:
                 if int(self.grow_lvl) == 0:
                     self.level = 0
                     self.grow_lvl = 0
-                    self.state = Mario.IN_AIR
+                    self.state = Mario.IDLE
                     self.y += tile_size * scale
                     self.cur_frame = 0
                     self.cur_img = self.small_img
@@ -162,10 +163,10 @@ class Mario:
         if self.x + tile_size * scale >= background.map_size[background.index][0]:
             self.x = background.map_size[background.index][0] - tile_size * scale
 
-    def rect_collision(self, entities, size_entities=[8 * scale, 14 * scale]):
+    def rect_collision(self, entities, size_entities=None):
+        if size_entities is None:
+            size_entities = [8 * scale, 14 * scale]
         rect1 = [self.x, self.y, tile_size * scale, tile_size * scale]
         rect2 = [entities.x, entities.y, size_entities[0], size_entities[1]]
-        if rect1[0] <= rect2[0] + rect2[2] and rect2[0] <= rect1[0] + rect1[2] and rect1[1] <= rect2[1] + rect2[3] and \
-                rect2[1] <= rect1[1] + rect1[3]:
-            return True
-        return False
+        return rect1[0] <= rect2[0] + rect2[2] and rect2[0] <= rect1[0] + rect1[2] and rect1[1] <= rect2[1] + rect2[
+            3] and rect2[1] <= rect1[1] + rect1[3]

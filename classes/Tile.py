@@ -1,4 +1,4 @@
-import pygame, json
+import json
 
 
 class Tile:

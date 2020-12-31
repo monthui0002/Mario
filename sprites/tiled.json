@@ -1,5 +1,5 @@
 {
-    "image_url":"./img/Tileset.png",
+    "image_url":"./img/tiles.png",
     "type": "tile",
     "sprites": {
         "background":[
