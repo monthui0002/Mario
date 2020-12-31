@@ -1,9 +1,16 @@
 import pygame
 
+w = 16 * 16 * 2
+
+
 class Dashboard():
     coin = pygame.image.load('./img/items.png')
-    coin = coin.subsurface(144,160,6,8)
-    coin = pygame.transform.scale(coin,(12,16))
+    coin1 = coin.subsurface(0, 160, 7, 8)
+    coin2 = coin.subsurface(8, 160, 7, 8)
+    coin3 = coin.subsurface(16, 160, 7, 8)
+    coin = [pygame.transform.scale(coin1, (14, 16)), pygame.transform.scale(coin2, (14, 16)),
+            pygame.transform.scale(coin3, (14, 16))]
+
     def __init__(self, screen):
         self.state = "menu"
         self.screen = screen
@@ -12,26 +19,33 @@ class Dashboard():
         self.coins = 0
         self.ticks = 0
         self.time = 0
+        self.coin_img = Dashboard.coin[0]
+        self.index = 0
 
     # myfont = pygame.font.Font('freesansbold.ttf', 32)
     def update(self):
-        self.drawText("MARIO", 50, 20, 15)
-        self.drawText(self.pointString(), 50, 37, 15)
-        self.screen.blit(Dashboard.coin,(235,37))
-        self.drawText("x {}".format(self.coinString()), 250, 37, 16)
-
-        self.drawText("WORLD", 450, 20, 15)
-        self.drawText(str(self.levelName), 465, 37, 15)
-
-        self.drawText("TIME", 670, 20, 15)
-        # if self.state != "menu":
-        self.drawText(self.timeString(), 660, 37, 15)
-
         # update Time
         self.ticks += 1
         if self.ticks == 60:
             self.ticks = 0
             self.time += 1
+
+        if self.ticks % 10 == 0:
+            self.index += 1 if self.index < 2 else -self.index
+            self.coin_img = Dashboard.coin[self.index]
+
+        self.drawText("MARIO", 17, 20, 15)
+        self.drawText(self.pointString(), 17, 37, 15)
+
+        self.screen.blit(self.coin_img, (int(w / 4), 37))
+        self.drawText("x {}".format(self.coinString()), int(w / 4) + 17, 37, 16)
+
+        self.drawText("WORLD", int(w / 2) + 17, 20, 15)
+        self.drawText(str(self.levelName), int(w / 2) + 17, 37, 15)
+
+        self.drawText("TIME", int(3 * w / 4) + 17, 20, 15)
+        # if self.state != "menu":
+        self.drawText(self.timeString(), int(3 * w / 4) + 17, 37, 15)
 
     def drawText(self, text, x, y, size):
         myfont = pygame.font.Font('freesansbold.ttf', size)
@@ -45,4 +59,4 @@ class Dashboard():
         return "{:06d}".format(self.points)
 
     def timeString(self):
-        return "{:02d}:{:02d}:{:02d}".format(self.time//3600,(self.time%3600)//60,(self.time%3600)%60)
+        return "{:02d}:{:02d}:{:02d}".format(self.time // 3600, (self.time % 3600) // 60, (self.time % 3600) % 60)

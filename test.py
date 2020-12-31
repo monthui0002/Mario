@@ -8,7 +8,7 @@ tile_size = 16
 scale = 2
 fpsClock = pygame.time.Clock()
 pygame.font.init()
-window_size = (25 * tile_size * scale, 14 * tile_size * scale)  # 25*14
+window_size = (16 * tile_size * scale, 14 * tile_size * scale)  # 25*14
 pygame.display.set_caption('MARIO')
 screen = pygame.display.set_mode(window_size)
 background = Background(0, 0, screen)

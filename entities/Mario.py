@@ -4,7 +4,7 @@ from classes.Input import get
 
 tile_size = 16
 scale = 2
-w, h = (25 * tile_size * scale, 14 * tile_size * scale)
+w, h = (16 * tile_size * scale, 14 * tile_size * scale)
 FPS = 60
 
 
@@ -38,7 +38,7 @@ class Mario:
     DIRECTION_RIGHT = 1
     DIRECTION_LEFT = -1
     GRAVITY = .5
-    FALL_SPEED = 3
+    FALL_SPEED = 0
     IMAGE = pygame.image.load("./img/mario.png")
 
     def __init__(self, x, y, direction, level, state, screen):
@@ -107,12 +107,10 @@ class Mario:
             self.cur_fall_speed += Mario.GRAVITY
             land_condition = self.y > h - tile_size * scale * (2 if self.level == 1 else 1)
             if land_condition:
-                if self.level == 0:
-                    print("game over! ngu lon chua")
-                else:
-                    self.state = Mario.SHRINK
-                    self.x = 0
-                    self.y = 0
+                self.y = h - tile_size * scale * (2 if self.level == 1 else 1)
+                # self.state = Mario.SHRINK
+                # self.x = 0
+                # self.y = 0
                 self.state = Mario.IDLE
                 self.cur_fall_speed = Mario.FALL_SPEED
 

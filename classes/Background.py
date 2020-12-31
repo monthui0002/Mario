@@ -9,7 +9,7 @@ from entities.Mario import Mario
 FPS = 60
 tile_size = 16
 scale = 2
-w, h = (25 * tile_size * scale, 14 * tile_size * scale)
+w, h = (16 * tile_size * scale, 14 * tile_size * scale)
 
 tiles = Tile().tiles
 
@@ -45,13 +45,17 @@ def add_map(urlListMap):
 
 
 class Background:
+    DIRECTION_LEFT = 0
+    DIRECTION_RIGHT = 1
+    DIRECTION_UP = 2
+    DIRECTION_DOWN = 3
     def __init__(self, x, y, screen):
         self.x = x
         self.y = y
         self.map, self.map_size, self.color = add_map([
             "./levels/map1_2.json",
-            "./levels/map1_1.json",
-            "./levels/bonus_area_1_1.json"
+            # "./levels/map1_1.json",
+            # "./levels/bonus_area_1_1.json"
         ])
         self.index = 1  # defaul map = 1
         # self.wall = self.load_wall()
@@ -163,15 +167,23 @@ class Background:
     def check_on_ground(self, player):
         if "ground" in self.map[self.index]:
             for ground_name in self.map[self.index]["ground"]:
-                on_ground, rect = rect_collision(player, self.map[self.index]["ground"][ground_name])
+                on_ground, rect, direction = rect_collision(player, self.map[self.index]["ground"][ground_name])
                 if on_ground:
                     player.y = rect[1] * tile_size * scale - tile_size * scale * (2 if player.level == 1 else 1)
+                    # if direction == Background.DIRECTION_UP:
+                    #     player.y = rect[1] * tile_size * scale - tile_size * scale * (2 if player.level == 1 else 1)
+                    # elif direction == Background.DIRECTION_DOWN:
+                    #     player.y = rect[1] + rect[3]
+                    # elif direction == Background.DIRECTION_RIGHT:
+                    #     player.x = rect[0] + rect[2]
+                    # else:
+                    #     player.x = rect[0]
                     if player.state == Mario.IN_AIR:
                         player.state = Mario.IDLE
                 else:
                     if player.state != Mario.IN_AIR:
+                        player.state = Mario.IN_AIR
                         print("roi")
-
 
 def rect_collision(player, list_rect):
     size = tile_size * scale
@@ -180,5 +192,14 @@ def rect_collision(player, list_rect):
         if rect1[0] <= rect2[0] * size + rect2[2] * size and rect2[0] * size <= rect1[0] + rect1[2] and rect1[1] <= \
                 rect2[1] * size + rect2[3] * size and \
                 rect2[1] * size <= rect1[1] + rect1[3]:
-            return True, rect2
-    return False, []
+            if player.cur_fall_speed > 0:
+                player.cur_fall_speed = 0
+                direction = Background.DIRECTION_UP
+            elif player.cur_fall_speed < 0:
+                direction = Background.DIRECTION_DOWN
+            elif player.direction == Mario.DIRECTION_LEFT:
+                direction = Background.DIRECTION_LEFT
+            else:
+                direction = Background.DIRECTION_RIGHT
+            return True, rect2, direction
+    return False, [], 0
