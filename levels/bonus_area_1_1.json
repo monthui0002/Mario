@@ -1,6 +1,6 @@
 {
-    "lengthx":16,
-    "lengthy":14,
+    "length-x":16,
+    "length-y":14,
     "color": [0,0,0],
     "object":{
         "reactable":{

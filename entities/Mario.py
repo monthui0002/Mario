@@ -41,7 +41,7 @@ class Mario:
     FALL_SPEED = 0
     IMAGE = pygame.image.load("./img/mario.png")
 
-    def __init__(self, x, y, direction, level, state, screen):
+    def __init__(self, x, y, direction, level, state, screen, background):
         self.x, self.y = x, y
         self.small_img, self.big_img = load_img()
         self.direction = direction
@@ -54,19 +54,16 @@ class Mario:
         self.cur_img = self.small_img if self.level == 0 else self.big_img
         self.grow_lvl = 0
         self.pause = False
+        self.background = background
 
     def get_input(self):
         self.key_input = get(self.key_input)
 
-    def update(self, background):
+    def update(self):
         self.get_input()
         self.move()
-        self.check_out_range(background)
-        self.render(background)
-        # for coin in background.coin:
-        #     if self.rect_collision(coin):
-        #         background.coin.remove(coin)
-        #         print("coin + 1")  # dashboard.coin + 1
+        self.check_out_range()
+        self.render()
 
     def move(self):
         if self.key_input["Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
@@ -108,10 +105,9 @@ class Mario:
             land_condition = self.y > h - tile_size * scale * (2 if self.level == 1 else 1)
             if land_condition:
                 self.y = h - tile_size * scale * (2 if self.level == 1 else 1)
-                # self.state = Mario.SHRINK
-                # self.x = 0
-                # self.y = 0
-                self.state = Mario.IDLE
+                self.state = Mario.SHRINK
+                self.x = 0
+                self.y = 0
                 self.cur_fall_speed = Mario.FALL_SPEED
 
         elif self.state == Mario.SWIM:
@@ -141,25 +137,25 @@ class Mario:
             else:
                 print("Game over here!")
 
-    def render(self, background):
+    def render(self):
         img = Mario.IMAGE.subsurface(self.cur_img[int(self.cur_frame)][0])
         if self.direction == Mario.DIRECTION_LEFT:
             img = pygame.transform.flip(img, True, False)
         if self.x <= (w - tile_size * scale) / 2:
             pos_x = self.x
-        elif self.x + (w + tile_size * scale) / 2 >= background.map_size[background.index][0]:
-            pos_x = w - (background.map_size[background.index][0] - self.x)
+        elif self.x + (w + tile_size * scale) / 2 >= self.background.map_size[self.background.index][0]:
+            pos_x = w - (self.background.map_size[self.background.index][0] - self.x)
         else:
             pos_x = (w - tile_size * scale) / 2
         self.screen.blit(
             pygame.transform.scale(img, (tile_size * scale, tile_size * scale * (2 if self.level == 1 else 1))),
             (pos_x, self.y))
 
-    def check_out_range(self, background):
+    def check_out_range(self):
         if self.x < 0:
             self.x = 0
-        if self.x + tile_size * scale >= background.map_size[background.index][0]:
-            self.x = background.map_size[background.index][0] - tile_size * scale
+        if self.x + tile_size * scale >= self.background.map_size[self.background.index][0]:
+            self.x = self.background.map_size[self.background.index][0] - tile_size * scale
 
     def rect_collision(self, entities, size_entities=None):
         if size_entities is None:
