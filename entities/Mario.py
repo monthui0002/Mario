@@ -1,11 +1,7 @@
 import pygame
 
 from classes.Input import get
-
-tile_size = 16
-scale = 2
-w, h = (16 * tile_size * scale, 14 * tile_size * scale)
-FPS = 60
+from classes.Constants import *
 
 
 def load_img():
@@ -41,11 +37,12 @@ class Mario:
     FALL_SPEED = 0
     IMAGE = pygame.image.load("./img/mario.png")
 
-    def __init__(self, x, y, direction, level, state, screen, background):
+    def __init__(self, x, y, direction, level, state, screen, background, play_lvl):
         self.x, self.y = x, y
         self.small_img, self.big_img = load_img()
         self.direction = direction
         self.level = level
+        self.play_lvl = play_lvl
         self.state = state
         self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
         self.screen = screen
@@ -62,7 +59,7 @@ class Mario:
     def update(self):
         self.get_input()
         self.move()
-        self.check_out_range()
+        self.background.check_out_range()
         self.render()
 
     def move(self):
@@ -79,9 +76,15 @@ class Mario:
         if moving:
             self.x += self.direction * Mario.STEP
             self.direction = Mario.DIRECTION_LEFT if self.key_input["Left"] else Mario.DIRECTION_RIGHT
+            if self.direction == Mario.DIRECTION_LEFT:
+                self.play_lvl.check_collision_left(self)
+            else:
+                self.play_lvl.check_collision_right(self)
             if self.state == Mario.IDLE:
                 self.state = Mario.WALK
-
+            lol, _ = self.play_lvl.check_collision(self)
+            if not lol:
+                self.state = Mario.IN_AIR
         if self.key_input["Up"] and self.state != Mario.IN_AIR:
             self.cur_fall_speed = -6 * scale
             self.state = Mario.IN_AIR
@@ -102,14 +105,16 @@ class Mario:
             self.cur_frame = 5
             self.y += self.cur_fall_speed
             self.cur_fall_speed += Mario.GRAVITY
-            land_condition = self.y > h - tile_size * scale * (2 if self.level == 1 else 1)
-            if land_condition:
-                self.y = h - tile_size * scale * (2 if self.level == 1 else 1)
-                self.state = Mario.SHRINK
+            if self.cur_fall_speed > 0:
+                self.play_lvl.check_collision_bottom(self)
+            else:
+                self.play_lvl.check_collision_top(self)
+            if self.y > h:
+                print("Ngu")
                 self.x = 0
                 self.y = 0
+                self.state = Mario.IN_AIR
                 self.cur_fall_speed = Mario.FALL_SPEED
-
         elif self.state == Mario.SWIM:
             pass
         elif self.state == Mario.GROW and self.grow_lvl < 2:
@@ -143,24 +148,10 @@ class Mario:
             img = pygame.transform.flip(img, True, False)
         if self.x <= (w - tile_size * scale) / 2:
             pos_x = self.x
-        elif self.x + (w + tile_size * scale) / 2 >= self.background.map_size[self.background.index][0]:
-            pos_x = w - (self.background.map_size[self.background.index][0] - self.x)
+        elif self.x + (w + tile_size * scale) / 2 >= self.background.w:
+            pos_x = w - (self.background.w - self.x)
         else:
             pos_x = (w - tile_size * scale) / 2
         self.screen.blit(
             pygame.transform.scale(img, (tile_size * scale, tile_size * scale * (2 if self.level == 1 else 1))),
             (pos_x, self.y))
-
-    def check_out_range(self):
-        if self.x < 0:
-            self.x = 0
-        if self.x + tile_size * scale >= self.background.map_size[self.background.index][0]:
-            self.x = self.background.map_size[self.background.index][0] - tile_size * scale
-
-    def rect_collision(self, entities, size_entities=None):
-        if size_entities is None:
-            size_entities = [8 * scale, 14 * scale]
-        rect1 = [self.x, self.y, tile_size * scale, tile_size * scale]
-        rect2 = [entities.x, entities.y, size_entities[0], size_entities[1]]
-        return rect1[0] <= rect2[0] + rect2[2] and rect2[0] <= rect1[0] + rect1[2] and rect1[1] <= rect2[1] + rect2[
-            3] and rect2[1] <= rect1[1] + rect1[3]
