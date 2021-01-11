@@ -47,7 +47,7 @@ class Menu:
         self.dashboard = Dashboard(screen)
         self.dashboard.state = "menu"
         self.dashboard.levelName = ""
-        self.key_input = self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
+        self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
         self.pause = False
         self.cur_img = 1
         self.state = self.MENU
@@ -60,7 +60,7 @@ class Menu:
         self.update_setting()
 
     def get_input(self):
-        self.key_input = get(self.key_input)
+        self.key_input = get({"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False})
 
     def draw_background(self):
         background, ground, bg_colors = load_json()

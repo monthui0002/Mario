@@ -15,7 +15,6 @@ class Background:
         self.level = level
         self.w, self.h = level.map_size[0], level.map_size[1]
         self.screen = screen
-        self.dashboard = Dashboard(screen)
         self.character = None
 
     def set_character(self, c):
@@ -24,7 +23,6 @@ class Background:
     def update(self):
         self.update_camera()
         self.level.update(self.x, self.y)
-        self.dashboard.update()
 
     def update_camera(self):
         x_camera = self.character.x - (w - tile_size * scale) / 2

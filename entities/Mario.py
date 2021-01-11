@@ -1,6 +1,8 @@
 import pygame
 
 from classes.Input import get
+from classes.Pause import Pause
+from classes.Dashboard import Dashboard
 from classes.Constants import *
 
 
@@ -44,13 +46,16 @@ class Mario:
         self.level = level
         self.play_lvl = play_lvl
         self.state = state
-        self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
+        self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False, "Enter": False}
         self.screen = screen
         self.cur_frame = 0
         self.cur_fall_speed = Mario.FALL_SPEED
         self.cur_img = self.small_img if self.level == 0 else self.big_img
         self.grow_lvl = 0
         self.pause = False
+        self.restart = False
+        self.dashboard = Dashboard(self.screen)
+        self.pauseObj = Pause(self.screen,self, self.dashboard)
         self.background = background
 
     def get_input(self):
@@ -58,19 +63,23 @@ class Mario:
 
     def update(self):
         self.get_input()
+        self.dashboard.update()
         self.move()
         self.background.check_out_range()
         self.render()
 
     def move(self):
-        if self.key_input["Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
-            self.key_input["Enter"] = False
+        if self.key_input["KP_Enter"] and (self.grow_lvl == 0 or self.grow_lvl == 2):
+            self.key_input["KP_Enter"] = False
             if self.level == 0:
                 self.state = Mario.GROW
                 print("Grow")
             else:
                 print("Shrink")
                 self.state = Mario.SHRINK
+        if self.key_input["Escape"]:
+            self.pause = True
+            self.key_input["Escape"] = False
 
         moving = self.key_input["Right"] or self.key_input["Left"]
         if moving:
