@@ -1,5 +1,6 @@
 import pygame
 import json
+import os
 from classes.Dashboard import Dashboard
 from classes.Tile import Tile
 from classes.Input import get
@@ -8,18 +9,39 @@ from classes.Constants import *
 tiles = Tile().tiles
 
 def load_json():
-    with open('./levels/menu.json') as jsonData:
+    with open('./settings/menu.json') as jsonData:
         map_data = json.load(jsonData)
         bg_colors = map_data['color']
         ground = map_data['object']["ground"]
         background = map_data['object']["background"]
         return background,ground,bg_colors
+def load_setting():
+    with open('./settings/setting.json') as jsonData:
+        data = json.load(jsonData)
+        music = data['music']
+        sfx = data['sfx']
+        return music,sfx
+def load_level_name():
+    files = []
+    for f in os.listdir("./levels"):
+        files.append(f.split(".")[0])
+    return files
+
+
+levels = load_level_name()
 
 class Menu:
     image = pygame.image.load('./img/items.png')
     image1 = image.subsurface(311, 160, 9, 8)
     image2 = image.subsurface(23, 160, 9, 8)
     img = [pygame.transform.scale(image1, (18, 16)),pygame.transform.scale(image2, (18, 16))]
+
+    MENU = 0
+
+    INCHOOSINGLEVEL = 1
+    INSETTING = 2
+    EXIT = 3
+
     def __init__(self, screen):
         self.screen = screen
         self.dashboard = Dashboard(screen)
@@ -28,14 +50,19 @@ class Menu:
         self.key_input = self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
         self.pause = False
         self.cur_img = 1
+        self.state = self.MENU
+        self.music, self.sfx = load_setting()
+        self.level = 1
 
     def update(self):
-        self.load_background()
         self.dashboard.update()
-        self.draw_setting()
+        self.update_menu()
         self.update_setting()
-        self.get_input()
-    def load_background(self):
+
+    def get_input(self):
+        self.key_input = get(self.key_input)
+
+    def draw_background(self):
         background, ground, bg_colors = load_json()
 
         # load background menu
@@ -55,26 +82,69 @@ class Menu:
             for i in background[background_type]:
                 self.screen.blit(img,(i[0]*scale*tile_size,i[1]*scale*tile_size))
 
-        # load bảng tên
-        image = pygame.image.load('./img/title_screen.png')
-        image = image.subsurface(1,60,175,87)
-        image = pygame.transform.scale(image,(262,130))
-        self.screen.blit(image,((w - 262)/2,100))
-
         # load ảnh nhân vật
         mario = pygame.image.load('./img/mario.png')
         mario = mario.subsurface(80, 34, 16, 16)
         mario = pygame.transform.scale(mario, (16*scale, 16*scale))
         self.screen.blit(mario,(2.5*scale*tile_size,11*scale*tile_size))
 
-    def get_input(self):
-        self.key_input = get(self.key_input)
+    def draw_menu_background(self):
+        image = pygame.image.load('./img/title_screen.png')
+        image = image.subsurface(1,60,175,87)
+        image = pygame.transform.scale(image,(262,130))
+        self.screen.blit(image,((w - 262)/2,100))
+
+    def update_menu(self):
+        self.draw_background()
+        if self.state != self.INCHOOSINGLEVEL:
+            self.draw_menu_background()
+            self.dashboard.update()
+
+        if self.state == self.MENU:
+            self.draw_menu()
+        elif self.state == self.INCHOOSINGLEVEL:
+            self.draw_choose_level()
+        elif self.state == self.INSETTING:
+            self.draw_setting()
+        else:
+            pygame.quit()
+
+    def update_setting(self):
+        self.get_input()
+        if self.key_input["Up"]:
+            self.cur_img = self.cur_img - 1 if self.cur_img > 1 else 3
+        if self.key_input["Down"]:
+            self.cur_img = self.cur_img + 1 if self.cur_img < 3 else 1
+        if self.state == self.INCHOOSINGLEVEL:
+            if self.key_input["Right"]:
+                self.level = self.level + 1 if self.level < len(levels) else 1
+            elif self.key_input["Left"]:
+                self.level = self.level - 1 if self.level > 1 else len(levels)
+        if self.key_input["Enter"]:
+            if self.state == self.MENU:
+                if self.cur_img == 1:
+                    self.state = self.INCHOOSINGLEVEL
+                elif self.cur_img == 2:
+                    self.state = self.INSETTING
+                else:
+                    self.state = self.EXIT
+            elif self.state == self.INSETTING:
+                if self.cur_img == 1:
+                    self.music = not self.music
+                elif self.cur_img == 2:
+                    self.sfx = not self.sfx
+                else:
+                    self.state = self.MENU
+                    self.save_setting()
+            elif self.state == self.INCHOOSINGLEVEL:
+                self.pause = True
+
     def drawText(self, text, x, y, size):
         myfont = pygame.font.Font('freesansbold.ttf', size)
         textsurface = myfont.render(text, False, (255, 255, 255))
         self.screen.blit(textsurface, (x, y))
 
-    def draw_setting(self):
+    def draw_menu(self):
         self.screen.blit(self.img[0],((w - 262)/2,240))
         self.screen.blit(self.img[0],((w - 262)/2,270))
         self.screen.blit(self.img[0],((w - 262)/2,300))
@@ -83,15 +153,29 @@ class Menu:
         self.drawText("EXIT", (w - 262)/2 + 24, 300, 25)
         self.screen.blit(self.img[1],((w - 262)/2,240 if self.cur_img == 1 else 270 if self.cur_img == 2 else 300))
 
-    def update_setting(self):
-        if self.key_input["Up"]:
-            self.cur_img = self.cur_img - 1 if self.cur_img > 1 else 3
-        if self.key_input["Down"]:
-            self.cur_img = self.cur_img + 1 if self.cur_img < 3 else 1
-        if self.key_input["Enter"]:
-            if self.cur_img == 1:
-                print("choose level")
-            elif self.cur_img == 2:
-                print("setting")
+    def draw_setting(self):
+        self.screen.blit(self.img[0], ((w - 262) / 2, 240))
+        self.screen.blit(self.img[0], ((w - 262) / 2, 270))
+        self.screen.blit(self.img[0], ((w - 262) / 2, 300))
+        self.drawText("MUSIC", (w - 262) / 2 + 24, 240, 25)
+        self.drawText("ON" if self.music else "OFF", (w - 262) / 2 + 150, 240, 25)
+        self.drawText("SFX", (w - 262) / 2 + 24, 270, 25)
+        self.drawText("ON" if self.sfx else "OFF", (w - 262) / 2 + 150, 270, 25)
+        self.drawText("BACK", (w - 262) / 2 + 24, 300, 25)
+        self.screen.blit(self.img[1], ((w - 262) / 2, 240 if self.cur_img == 1 else 270 if self.cur_img == 2 else 300))
+
+    def draw_choose_level(self):
+        x = 30
+        y = 30
+        width = 120
+        for i in range(0,len(levels)):
+            if i+1 != self.level:
+                pygame.draw.rect(self.screen, [150, 150, 150], pygame.Rect(x  + width*i, y, 100, 100) , 2)
             else:
-                pygame.quit()
+                pygame.draw.rect(self.screen, [255, 255, 255], pygame.Rect(x + width * i, y, 100, 100), 2)
+            self.drawText(levels[i], 60 + width * i, 60, 30)
+
+    def save_setting(self):
+        data = {"music": self.music, "sfx": self.sfx}
+        with open('./settings/setting.json', "w") as outfile:
+            json.dump(data, outfile)
