@@ -143,11 +143,11 @@ class Level:
                                     1] * tile_size * scale <= character.y <= (
                                         obj_item[1] + obj_item[3]) * tile_size * scale and
                                 (obj_item[0] * tile_size * scale <= character.x <= (
-                                        obj_item[0] + obj_item[2]) * tile_size * scale or obj_item[
-                                     0] * tile_size * scale <= character.x + tile_size * scale <= (
+                                        obj_item[0] + obj_item[2]) * tile_size * scale - delta or obj_item[
+                                     0] * tile_size * scale + delta <= character.x + tile_size * scale <= (
                                          obj_item[0] + obj_item[2]) * tile_size * scale))
                     if touch_up:
-                        character.y = (obj_item[1] + 1) * tile_size * scale
+                        character.y = (obj_item[1] + obj_item[3]) * tile_size * scale
                         character.cur_fall_speed *= -0.7
                         return
 
@@ -159,7 +159,7 @@ class Level:
                 for obj_item in self.map[collided_obj][ground_name]:
                     if len(obj_item) != 4:
                         obj_item += [1, 1]
-                    coll = (obj_item[0] * tile_size * scale <= character.x + tile_size * scale <= (
+                    coll = (obj_item[0] * tile_size * scale - delta <= character.x + tile_size * scale <= (
                             obj_item[0] + obj_item[2]) * tile_size * scale) and (
                                    character.y + tile_size * scale * (character.level + 1) - delta >= obj_item[
                                1] * tile_size * scale and character.y + tile_size * scale * (
@@ -176,11 +176,11 @@ class Level:
                 for obj_item in self.map[collided_obj][ground_name]:
                     if len(obj_item) != 4:
                         obj_item += [1, 1]
-                    coll = (obj_item[0] * tile_size * scale <= character.x <= (
+                    coll = (obj_item[0] * tile_size * scale + delta <= character.x <= (
                             obj_item[0] + obj_item[2]) * tile_size * scale) and (
                                    character.y + tile_size * scale * (character.level + 1) - delta >= obj_item[
                                1] * tile_size * scale and character.y + tile_size * scale * (
                                            character.level + 1) <= (
                                            obj_item[1] + obj_item[3]) * tile_size * scale)
                     if coll:
-                        character.x = (obj_item[0] + 1) * tile_size * scale + delta
+                        character.x = (obj_item[0] + obj_item[2]) * tile_size * scale + delta
