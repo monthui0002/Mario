@@ -24,7 +24,6 @@ def load(list_url):
                 sprites = data["sprites"]
                 for sprite in sprites:
                     dic[sprite["name"]] = [img, sprite["x"], sprite["y"], sprite["size"]]
-                print(dic)
         res.update(dic)
     return res
 

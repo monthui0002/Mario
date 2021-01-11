@@ -55,7 +55,7 @@ class Mario:
         self.pause = False
         self.restart = False
         self.dashboard = Dashboard(self.screen)
-        self.pauseObj = Pause(self.screen,self, self.dashboard)
+        self.pauseObject = Pause(self.screen,self, self.dashboard)
         self.background = background
 
     def get_input(self):
@@ -77,9 +77,13 @@ class Mario:
             else:
                 print("Shrink")
                 self.state = Mario.SHRINK
-        if self.key_input["Escape"]:
+
+        if self.key_input["Enter"]:
             self.pause = True
-            self.key_input["Escape"] = False
+            self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False, "Enter": False}
+
+        if self.key_input["Escape"]:
+            self.restart = True
 
         moving = self.key_input["Right"] or self.key_input["Left"]
         if moving:

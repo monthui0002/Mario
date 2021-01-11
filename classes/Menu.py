@@ -1,6 +1,5 @@
 import pygame
 import json
-import os
 from classes.Dashboard import Dashboard
 from classes.Tile import Tile
 from classes.Input import get
@@ -53,6 +52,7 @@ class Menu:
         self.state = self.MENU
         self.music, self.sfx = load_setting()
         self.level = 1
+        self.level_name = ""
 
     def update(self):
         self.dashboard.update()
@@ -137,6 +137,7 @@ class Menu:
                     self.state = self.MENU
                     self.save_setting()
             elif self.state == self.INCHOOSINGLEVEL:
+                self.level_name = list_map[self.level - 1]
                 self.pause = True
 
     def drawText(self, text, x, y, size):
