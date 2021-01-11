@@ -19,8 +19,8 @@ class Pause:
         self.key_input = get({"Enter": False})
 
     def draw_pause(self):
-        self.dashboard.drawText("PAUSE", 120, 160, 70)
-        self.dashboard.drawText("press enter to continue", 120, 230, 20)
+        self.dashboard.drawText("PAUSE", 140, 160, 70)
+        self.dashboard.drawText("press enter to continue", 140, 230, 20)
 
     def checkInput(self):
         self.get_input()

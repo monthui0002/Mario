@@ -23,19 +23,19 @@ class Dashboard():
     # myfont = pygame.font.Font('freesansbold.ttf', 32)
     def update(self):
 
-        self.drawText("MARIO", 17, 20, 15)
-        self.drawText(self.pointString(), 17, 37, 15)
+        self.drawText("MARIO", 25, 20, 15)
+        self.drawText(self.pointString(), 25, 37, 15)
 
         self.screen.blit(self.coin_img, (int(w / 4), 37))
-        self.drawText("x {}".format(self.coinString()), int(w / 4) + 17, 37, 16)
+        self.drawText("x {}".format(self.coinString()), int(w / 4) + 25, 37, 16)
 
-        self.drawText("WORLD", int(w / 2) + 17, 20, 15)
-        self.drawText(str(self.levelName), int(w / 2) + 34, 37, 15)
+        self.drawText("WORLD", int(w / 2) + 25, 20, 15)
+        self.drawText(str(self.levelName), int(w / 2) + 40, 37, 15)
 
-        self.drawText("TIME", int(3 * w / 4) + 17, 20, 15)
+        self.drawText("TIME", int(3 * w / 4) + 25, 20, 15)
         if self.state != "menu":
             self.update_time()
-            self.drawText(self.timeString(), int(3 * w / 4) + 7, 37, 15)
+            self.drawText(self.timeString(), int(3 * w / 4) + 17, 37, 15)
 
     def drawText(self, text, x, y, size):
         myfont = pygame.font.Font('freesansbold.ttf', size)

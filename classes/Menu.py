@@ -18,8 +18,7 @@ def load_setting():
     with open('./settings/setting.json') as jsonData:
         data = json.load(jsonData)
         music = data['music']
-        sfx = data['sfx']
-        return music,sfx
+        return music
 def load_level_name():
     files = []
     for f in os.listdir("./levels"):
@@ -50,7 +49,7 @@ class Menu:
         self.pause = False
         self.cur_img = 1
         self.state = self.MENU
-        self.music, self.sfx = load_setting()
+        self.music = load_setting()
         self.level = 1
         self.level_name = ""
 
@@ -131,8 +130,6 @@ class Menu:
             elif self.state == self.INSETTING:
                 if self.cur_img == 1:
                     self.music = not self.music
-                elif self.cur_img == 2:
-                    self.sfx = not self.sfx
                 else:
                     self.state = self.MENU
                     self.save_setting()
@@ -157,13 +154,10 @@ class Menu:
     def draw_setting(self):
         self.screen.blit(self.img[0], ((w - 262) / 2, 240))
         self.screen.blit(self.img[0], ((w - 262) / 2, 270))
-        self.screen.blit(self.img[0], ((w - 262) / 2, 300))
         self.drawText("MUSIC", (w - 262) / 2 + 24, 240, 25)
         self.drawText("ON" if self.music else "OFF", (w - 262) / 2 + 150, 240, 25)
-        self.drawText("SFX", (w - 262) / 2 + 24, 270, 25)
-        self.drawText("ON" if self.sfx else "OFF", (w - 262) / 2 + 150, 270, 25)
-        self.drawText("BACK", (w - 262) / 2 + 24, 300, 25)
-        self.screen.blit(self.img[1], ((w - 262) / 2, 240 if self.cur_img == 1 else 270 if self.cur_img == 2 else 300))
+        self.drawText("BACK", (w - 262) / 2 + 24, 270, 25)
+        self.screen.blit(self.img[1], ((w - 262) / 2, 240 if self.cur_img == 1 else 270))
 
     def draw_choose_level(self):
         x = 30
@@ -177,6 +171,6 @@ class Menu:
             self.drawText(levels[i], 60 + width * i, 60, 30)
 
     def save_setting(self):
-        data = {"music": self.music, "sfx": self.sfx}
+        data = {"music": self.music}
         with open('./settings/setting.json', "w") as outfile:
             json.dump(data, outfile)
