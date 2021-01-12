@@ -1,10 +1,10 @@
 import pygame
 
-from classes.Menu import Menu
 from classes.Background import Background
-from classes.Level import Level
-from entities.Mario import Mario
 from classes.Constants import *
+from classes.Level import Level
+from classes.Menu import Menu
+from entities.Mario import Mario
 
 fpsClock = pygame.time.Clock()
 pygame.font.init()

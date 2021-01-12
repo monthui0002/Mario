@@ -1,9 +1,9 @@
 import pygame
 
+from classes.Constants import *
+from classes.Dashboard import Dashboard
 from classes.Input import get
 from classes.Pause import Pause
-from classes.Dashboard import Dashboard
-from classes.Constants import *
 
 
 def load_img():
@@ -29,7 +29,8 @@ class Mario:
     CLIMB = 6
     SWIM = 7
     GROW = 8
-    UNDEFINED = 9
+    DEAD = 9
+    WIN = 10
 
     # Constants
     STEP = 5
@@ -55,7 +56,7 @@ class Mario:
         self.grow_lvl = 0
         self.pause = False
         self.restart = False
-        self.dashboard = Dashboard(self.screen,play_lvl.name)
+        self.dashboard = Dashboard(self.screen, play_lvl.name)
         self.pauseObject = Pause(self.screen, self, self.dashboard)
         self.background = background
 
@@ -124,12 +125,10 @@ class Mario:
                 self.play_lvl.check_collision_bottom(self)
             else:
                 self.play_lvl.check_collision_top(self)
-            if self.y > h:
-                print("Lose")
-                self.x = 0
-                self.y = 0
-                self.state = Mario.IN_AIR
-                self.cur_fall_speed = Mario.FALL_SPEED
+            if self.y + (self.level + 1) * tile_size * scale >= h:
+                self.state = Mario.DEAD
+                self.y = h - (self.level + 1) * tile_size * scale
+                self.pause = True
         elif self.state == Mario.SWIM:
             pass
         elif self.state == Mario.GROW and self.grow_lvl < 2:
@@ -154,8 +153,6 @@ class Mario:
                     self.y += tile_size * scale
                     self.cur_frame = 0
                     self.cur_img = self.small_img
-            else:
-                print("Game over here!")
 
     def render(self):
         img = Mario.IMAGE.subsurface(self.cur_img[int(self.cur_frame)][0])

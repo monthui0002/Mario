@@ -54,6 +54,7 @@ class Background:
     def check_out_range(self):
         if self.character.x < 0:
             self.character.x = 0
-        if self.character.x + tile_size * scale >= self.w:
-            print("Win")
-            self.character.x = self.w - tile_size * scale
+        if self.character.x >= self.level.map['background']['flag'][0][0] * tile_size * scale:
+            self.character.state = Mario.WIN
+            self.character.x = self.level.map['background']['flag'][0][0] * tile_size * scale
+            self.character.pause = True

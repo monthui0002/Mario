@@ -47,7 +47,7 @@ class Menu:
 
     def __init__(self, screen):
         self.screen = screen
-        self.dashboard = Dashboard(screen,"loz ngu Hau")
+        self.dashboard = Dashboard(screen, "loz ngu Hau")
         self.dashboard.state = "menu"
         self.dashboard.level_name = ""
         self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
