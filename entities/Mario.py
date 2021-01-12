@@ -46,7 +46,8 @@ class Mario:
         self.level = level
         self.play_lvl = play_lvl
         self.state = state
-        self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False, "Enter": False}
+        self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False,
+                          "Enter": False}
         self.screen = screen
         self.cur_frame = 0
         self.cur_fall_speed = Mario.FALL_SPEED
@@ -54,8 +55,8 @@ class Mario:
         self.grow_lvl = 0
         self.pause = False
         self.restart = False
-        self.dashboard = Dashboard(self.screen)
-        self.pauseObject = Pause(self.screen,self, self.dashboard)
+        self.dashboard = Dashboard(self.screen,play_lvl.name)
+        self.pauseObject = Pause(self.screen, self, self.dashboard)
         self.background = background
 
     def get_input(self):
@@ -80,10 +81,15 @@ class Mario:
 
         if self.key_input["Enter"]:
             self.pause = True
-            self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False, "Enter": False}
+            self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False,
+                              "Escape": False, "Enter": False}
 
         if self.key_input["Escape"]:
             self.restart = True
+
+        if self.key_input["Up"] and self.state != Mario.IN_AIR:
+            self.cur_fall_speed = -6 * scale
+            self.state = Mario.IN_AIR
 
         moving = self.key_input["Right"] or self.key_input["Left"]
         if moving:
@@ -98,10 +104,6 @@ class Mario:
             lol, _ = self.play_lvl.check_collision(self)
             if not lol:
                 self.state = Mario.IN_AIR
-        if self.key_input["Up"] and self.state != Mario.IN_AIR:
-            self.cur_fall_speed = -6 * scale
-            self.state = Mario.IN_AIR
-
         if self.state == Mario.IDLE:
             self.cur_frame = 0
         elif self.state == Mario.WALK:
@@ -123,7 +125,7 @@ class Mario:
             else:
                 self.play_lvl.check_collision_top(self)
             if self.y > h:
-                print("Ngu")
+                print("Lose")
                 self.x = 0
                 self.y = 0
                 self.state = Mario.IN_AIR

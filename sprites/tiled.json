@@ -1898,6 +1898,12 @@
             "x":64,
             "y":432,
             "size":[16,16]
+        },
+        {
+            "name": "opened-box",
+            "x": 48,
+            "y": 0,
+            "size": [16,16]
         }
         ],
         "animation": [
@@ -2120,7 +2126,7 @@
         ],
         "reactable": [
             {
-                "name":"1-2",
+                "name":"hidden-box",
                 "x":16,
                 "y":0,
                 "size":[16,16]
@@ -2132,19 +2138,19 @@
                 "size":[16,16]
             },
             {
-                "name":"1-16",
+                "name":"random-box",
                 "x":240,
                 "y":0,
                 "size":[16,16]
             },
             {
-                "name":"1-17",
+                "name":"random-box1",
                 "x":256,
                 "y":0,
                 "size":[16,16]
             },
             {
-                "name":"1-18",
+                "name":"random-box2",
                 "x":272,
                 "y":0,
                 "size":[16,16]

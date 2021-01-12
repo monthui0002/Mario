@@ -1,28 +1,25 @@
 import pygame
+
 from classes.Constants import *
 
-class Dashboard():
-    coin = pygame.image.load('./img/items.png')
-    coin1 = coin.subsurface(0, 160, 7, 8)
-    coin2 = coin.subsurface(8, 160, 7, 8)
-    coin3 = coin.subsurface(16, 160, 7, 8)
-    coin = [pygame.transform.scale(coin1, (14, 16)), pygame.transform.scale(coin2, (14, 16)),
-            pygame.transform.scale(coin3, (14, 16))]
 
-    def __init__(self, screen):
+class Dashboard:
+
+    def __init__(self, screen, lvl_name):
         self.state = "mario"
         self.screen = screen
-        self.levelName = "1-1"
-        self.points = 0
+        self.level_name = lvl_name
+        self.point = 0
         self.coins = 0
-        self.ticks = 0
         self.time = 0
-        self.coin_img = Dashboard.coin[0]
+        coin = pygame.image.load('./img/items.png')
+        self.coin = [pygame.transform.scale(coin.subsurface(0, 160, 7, 8), (14, 16)),
+                     pygame.transform.scale(coin.subsurface(8, 160, 7, 8), (14, 16)),
+                     pygame.transform.scale(coin.subsurface(16, 160, 7, 8), (14, 16))]
+        self.coin_img = self.coin[0]
         self.index = 0
 
-    # myfont = pygame.font.Font('freesansbold.ttf', 32)
     def update(self):
-
         self.drawText("MARIO", 25, 20, 15)
         self.drawText(self.pointString(), 25, 37, 15)
 
@@ -30,7 +27,7 @@ class Dashboard():
         self.drawText("x {}".format(self.coinString()), int(w / 4) + 25, 37, 16)
 
         self.drawText("WORLD", int(w / 2) + 25, 20, 15)
-        self.drawText(str(self.levelName), int(w / 2) + 40, 37, 15)
+        self.drawText(str(self.level_name), int(w / 2) + 40, 37, 15)
 
         self.drawText("TIME", int(3 * w / 4) + 25, 20, 15)
         if self.state != "menu":
@@ -38,25 +35,19 @@ class Dashboard():
             self.drawText(self.timeString(), int(3 * w / 4) + 17, 37, 15)
 
     def drawText(self, text, x, y, size):
-        myfont = pygame.font.Font('freesansbold.ttf', size)
-        textsurface = myfont.render(text, False, (255, 255, 255))
-        self.screen.blit(textsurface, (x, y))
+        my_font = pygame.font.Font('freesansbold.ttf', size)
+        text_surface = my_font.render(text, False, (255, 255, 255))
+        self.screen.blit(text_surface, (x, y))
 
     def coinString(self):
         return "{:02d}".format(self.coins)
 
     def pointString(self):
-        return "{:06d}".format(self.points)
+        return "{:06d}".format(self.point)
 
     def timeString(self):
         return "{:02d}:{:02d}:{:02d}".format(self.time // 3600, (self.time % 3600) // 60, (self.time % 3600) % 60)
 
     def update_time(self):
-        self.ticks += 1
-        if self.ticks == 60:
-            self.ticks = 0
-            self.time += 1
-
-        if self.ticks % 10 == 0:
-            self.index += 1 if self.index < 2 else -self.index
-            self.coin_img = Dashboard.coin[self.index]
+        self.index += 5 / FPS if self.index < 2 else -self.index
+        self.coin_img = self.coin[int(self.index)]

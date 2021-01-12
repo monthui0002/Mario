@@ -1,5 +1,4 @@
 from classes.Constants import *
-from classes.Dashboard import Dashboard
 from entities.Mario import Mario
 
 

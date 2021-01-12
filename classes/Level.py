@@ -2,6 +2,9 @@ import json
 
 import pygame
 
+from boxes.Box import Box
+from boxes.HiddenBox import HiddenBox
+from boxes.RandomBox import RandomBox
 from classes.Constants import *
 from classes.Tile import Tile
 from entities.Mario import Mario
@@ -25,16 +28,37 @@ class Level:
         self.background_and_stones = self.load_background_and_stones()
         self.reactables = self.load_reactables()
         self.screen = screen
+        self.name = path[path.rfind("/") + 1:path.rfind(".json")]
 
     def load_reactables(self):
-        reactables = {}
+        reactables = []
         if "reactable" in self.map:
             for reactable_type in self.map["reactable"]:
+                images = []
                 img = pygame.image.load(tiles[reactable_type][0])
-                img = img.subsurface(tiles[reactable_type][1], tiles[reactable_type][2],
-                                     tiles[reactable_type][3][0], tiles[reactable_type][3][1])
-                reactables[reactable_type] = pygame.transform.scale(img, (
-                    tiles[reactable_type][3][0] * scale, tiles[reactable_type][3][1] * scale))
+                if reactable_type == "hidden-box":
+                    img1 = img.subsurface(tiles[reactable_type][1], tiles[reactable_type][2],
+                                          tiles[reactable_type][3][0], tiles[reactable_type][3][1])
+                    images.append(pygame.transform.scale(img1, (
+                        tiles[reactable_type][3][0] * scale, tiles[reactable_type][3][1] * scale)))
+                elif reactable_type == "random-box":
+                    for i in range(0, 3):
+                        name = reactable_type + ("" if i == 0 else str(i))
+                        img1 = img.subsurface(tiles[name][1], tiles[name][2],
+                                              tiles[name][3][0], tiles[name][3][1])
+                        images.append(pygame.transform.scale(img1, (
+                            tiles[name][3][0] * scale, tiles[name][3][1] * scale)))
+                img1 = img.subsurface(tiles["opened-box"][1], tiles["opened-box"][2], tiles["opened-box"][3][0],
+                                      tiles["opened-box"][3][1])
+                images.append(pygame.transform.scale(img1, (
+                    tiles["opened-box"][3][0] * scale, tiles["opened-box"][3][1] * scale)))
+                for obj in self.map["reactable"][reactable_type]:
+                    if reactable_type == "hidden-box":
+                        reactables.append(
+                            HiddenBox(images, obj[0] * tile_size * scale, obj[1] * tile_size * scale, tiles))
+                    elif reactable_type == "random-box":
+                        reactables.append(
+                            RandomBox(images, obj[0] * tile_size * scale, obj[1] * tile_size * scale, tiles))
         return reactables  # dictionary{"name_tiles" : img}
 
     def load_ground(self):
@@ -73,11 +97,24 @@ class Level:
         self.update_reactables(bg_x, bg_y)
 
     def update_reactables(self, bg_x, bg_y):
-        if "reactable" in self.map:
-            for tiles_name in self.map["reactable"]:
-                for i in self.map["reactable"][tiles_name]:
-                    self.screen.blit(self.reactables[tiles_name],
-                                     (i[0] * tile_size * scale + bg_x, i[1] * tile_size * scale + bg_y))
+        for item in self.reactables:
+            if type(item).__name__ == "RandomBox":
+                if item.cur_frame != len(item.img) - 1:
+                    item.cur_frame += 5 / FPS
+                    if int(item.cur_frame) > len(item.img) - 2:
+                        item.cur_frame = 0
+            elif type(item).__name__ == "HiddenBox":
+                pass
+            self.screen.blit(item.img[int(item.cur_frame)],
+                             (item.x + bg_x, item.y + bg_y))
+            if item.triggered:
+                self.screen.blit(item.coin_img[int(item.coin_img_idx)], (item.x + bg_x,
+                                                                         item.y + bg_y - tile_size * scale))
+                item.coin_img_idx += 10 / FPS
+                if int(item.coin_img_idx) > len(item.coin_img) - 1:
+                    item.coin_img_idx = 0
+                    item.triggered = False
+                    item.has_coin = False
 
     def update_ground(self, bg_x, bg_y):
         if "ground" in self.map:
@@ -137,6 +174,8 @@ class Level:
                 continue
             for ground_name in self.map[collided_obj]:
                 for obj_item in self.map[collided_obj][ground_name]:
+                    if ground_name == "hidden-box" or ground_name == "random-box":
+                        continue
                     if len(obj_item) != 4:
                         obj_item += [1, 1]
                     touch_up = (obj_item[
@@ -150,6 +189,20 @@ class Level:
                         character.y = (obj_item[1] + obj_item[3]) * tile_size * scale
                         character.cur_fall_speed *= -0.7
                         return
+        for item in self.reactables:
+            touch_up = (item.y <= character.y <=
+                        item.y + item.h and (
+                                item.x <= character.x <= item.x + item.w - delta or item.x + delta <= character.x + tile_size * scale <= item.x + item.w))
+            if touch_up:
+                character.y = item.y + item.h
+                character.cur_fall_speed *= -0.7
+                if item.state == Box.NOT_OPENED and item.has_coin or type(item).__name__ == "RandomBox":
+                    item.state = Box.OPENED
+                    if item.has_coin:
+                        item.triggered = True
+                        character.dashboard.coins += 1
+                    item.cur_frame = len(item.img) - 1
+                return
 
     def check_collision_right(self, character):
         for collided_obj in self.map:

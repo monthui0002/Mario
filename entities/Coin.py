@@ -1,5 +1,5 @@
 import pygame
-from classes.Tile import Tile
+
 FPS = 60
 
 scale = 2

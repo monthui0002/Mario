@@ -25,6 +25,7 @@ while True:
     background = Background(0, 0, screen, level)
     mario = Mario(0, 0, Mario.DIRECTION_RIGHT, 0, Mario.IN_AIR, screen, background, level)
     background.set_character(mario)
+
     while not mario.restart:
         if mario.pause:
             mario.pauseObject.update()

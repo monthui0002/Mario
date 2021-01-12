@@ -2,13 +2,14 @@ import pygame
 
 from classes.Input import get
 
+
 class Pause:
 
     def __init__(self, screen, entity, dashboard):
         self.screen = screen
         self.entity = entity
         self.dashboard = dashboard
-        self.input = {"Enter": False}
+        self.key_input = {"Enter": False}
 
     def update(self):
         self.draw_pause()
