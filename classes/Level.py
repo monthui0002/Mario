@@ -201,7 +201,6 @@ class Level:
                     if item.has_coin:
                         item.triggered = True
                         character.dashboard.coins += 1
-                        character.dashboard.point += 5
                     item.cur_frame = len(item.img) - 1
                 return
 

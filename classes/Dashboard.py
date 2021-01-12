@@ -11,7 +11,7 @@ class Dashboard:
         self.state = "mario"
         self.screen = screen
         self.level_name = lvl_name
-        self.point = 0
+        self.turn_avail = 3
         self.coins = 0
         self.time = time.time()
         coin = pygame.image.load('./img/items.png')
@@ -23,10 +23,10 @@ class Dashboard:
 
     def update(self):
         self.draw_text("MARIO", 25, 20, 15)
-        self.draw_text(self.point_string(), 25, 37, 15)
+        self.draw_text("x {}".format(self.turn_string()), 25, 37, 15)
 
         self.screen.blit(self.coin_img, (int(w / 4), 37))
-        self.draw_text("x {}".format(self.coin_string()), int(w / 4) + 25, 37, 16)
+        self.draw_text("x {}".format(self.coin_string()), int(w / 4) + 15, 37, 16)
 
         self.draw_text("WORLD", int(w / 2) + 25, 20, 15)
         self.draw_text(str(self.level_name), int(w / 2) + 40, 37, 15)
@@ -36,16 +36,19 @@ class Dashboard:
             self.update_time()
             self.draw_text(self.time_string(), int(3 * w / 4) + 17, 37, 15)
 
-    def draw_text(self, text, x, y, size):
+    def draw_text(self, text, x, y, size, center=False):
         my_font = pygame.font.Font('freesansbold.ttf', size)
-        text_surface = my_font.render(text, False, (255, 255, 255))
-        self.screen.blit(text_surface, (x, y))
+        text_surface = my_font.render(text, True, (255, 255, 255))
+        if center:
+            self.screen.blit(text_surface, (w / 2 - text_surface.get_width() / 2, y))
+        else:
+            self.screen.blit(text_surface, (x, y))
 
     def coin_string(self):
         return "{:02d}".format(self.coins)
 
-    def point_string(self):
-        return "{:06d}".format(self.point)
+    def turn_string(self):
+        return "{:02d}".format(self.turn_avail)
 
     def time_string(self):
         delta_time = int(time.time() - self.time)

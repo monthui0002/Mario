@@ -13,14 +13,13 @@ pygame.display.set_caption('MARIO')
 screen = pygame.display.set_mode(window_size)
 bg = pygame.transform.scale(screen, (w, h))
 
-
 while True:
     menu = Menu(screen)
 
     while not menu.pause:
         menu.update()
         pygame.display.update()
-        fpsClock.tick(FPS/6)
+        fpsClock.tick(FPS / 6)
     level = Level("levels/" + menu.level_name, screen)
     background = Background(0, 0, screen, level)
     mario = Mario(0, 0, Mario.DIRECTION_RIGHT, 0, Mario.IN_AIR, screen, background, level)
