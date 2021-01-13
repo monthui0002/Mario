@@ -7,7 +7,7 @@ from classes.Constants import *
 
 class Dashboard:
 
-    def __init__(self, screen, lvl_name):
+    def __init__(self, screen, lvl_name="1-1"):
         self.state = "mario"
         self.screen = screen
         self.level_name = lvl_name
@@ -35,6 +35,8 @@ class Dashboard:
         if self.state != "menu":
             self.update_time()
             self.draw_text(self.time_string(), int(3 * w / 4) + 17, 37, 15)
+        else:
+            self.draw_text("{:02d}:{:02d}:{:02d}".format(0, 0, 0), int(3 * w / 4) + 17, 37, 15)
 
     def draw_text(self, text, x, y, size, center=False):
         my_font = pygame.font.Font('freesansbold.ttf', size)

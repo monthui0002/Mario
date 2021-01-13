@@ -1,9 +1,11 @@
-import pygame
 import json
-from classes.Dashboard import Dashboard
-from classes.Tile import Tile
-from classes.Input import get
+
+import pygame
+
 from classes.Constants import *
+from classes.Dashboard import Dashboard
+from classes.Input import get
+from classes.Tile import Tile
 
 tiles = Tile().tiles
 
@@ -47,9 +49,8 @@ class Menu:
 
     def __init__(self, screen):
         self.screen = screen
-        self.dashboard = Dashboard(screen, "loz ngu Hau")
+        self.dashboard = Dashboard(screen)
         self.dashboard.state = "menu"
-        self.dashboard.level_name = ""
         self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
         self.pause = False
         self.cur_img = 1

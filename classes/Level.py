@@ -108,13 +108,13 @@ class Level:
             self.screen.blit(item.img[int(item.cur_frame)],
                              (item.x + bg_x, item.y + bg_y))
             if item.triggered:
-                self.screen.blit(item.coin_img[int(item.coin_img_idx)], (item.x + bg_x,
+                self.screen.blit(item.item_img[int(item.item_img_idx)], (item.x + bg_x,
                                                                          item.y + bg_y - tile_size * scale))
-                item.coin_img_idx += 10 / FPS
-                if int(item.coin_img_idx) > len(item.coin_img) - 1:
-                    item.coin_img_idx = 0
+                item.item_img_idx += 10 / FPS
+                if int(item.item_img_idx) > len(item.item_img) - 1:
+                    item.item_img_idx = 0
                     item.triggered = False
-                    item.has_coin = False
+                    item.has_item = False
 
     def update_ground(self, bg_x, bg_y):
         if "ground" in self.map:
@@ -196,11 +196,20 @@ class Level:
             if touch_up:
                 character.y = item.y + item.h
                 character.cur_fall_speed *= -0.7
-                if item.state == Box.NOT_OPENED and item.has_coin or type(item).__name__ == "RandomBox":
+                if item.state == Box.NOT_OPENED and item.has_item or type(item).__name__ == "RandomBox":
                     item.state = Box.OPENED
-                    if item.has_coin:
+                    if item.has_item:
+                        item.has_item = False
+                        if item.item_type == Box.ITEM_COIN:
+                            character.dashboard.coins += 1
+                        elif item.item_type == Box.ITEM_MUSHROOM:
+                            character.key_input["Up"] = False
+                            if character.level < 1:
+                                character.state = Mario.GROW
+                        elif item.item_type == Box.ITEM_MINE:
+                            character.key_input["Up"] = False
+                            character.state = Mario.SHRINK
                         item.triggered = True
-                        character.dashboard.coins += 1
                     item.cur_frame = len(item.img) - 1
                 return
 

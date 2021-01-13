@@ -1,7 +1,6 @@
 import pygame
 
 from classes.Input import get
-from classes.Constants import *
 
 
 class Pause:
@@ -25,23 +24,27 @@ class Pause:
             self.dashboard.draw_text("Game Over!", 90, 160, 70, True)
             self.dashboard.draw_text("Press [Enter] to continue", 140, 230, 20, True)
         elif self.character.state == 10:
-            self.dashboard.draw_text("YOU WIN!", 90, 160, 70, True)
+            self.dashboard.draw_text("Victory!", 90, 160, 70, True)
             self.dashboard.draw_text("Press [Enter] to back to menu", 140, 230, 20, True)
         else:
-            self.dashboard.draw_text("PAUSED", 140, 160, 70, True)
+            self.dashboard.draw_text("Paused", 140, 160, 70, True)
             self.dashboard.draw_text("Press [Enter] to continue...", 140, 230, 20, True)
 
     def checkInput(self):
         self.get_input()
         if self.key_input["Enter"]:
             self.character.pause = False
-            if self.character.state == 9:
+            if self.character.state == self.character.DEAD:
                 if self.dashboard.turn_avail > 0:
                     self.dashboard.turn_avail -= 1
                     self.character.x = 0
                     self.character.y = 0
                     self.character.state = 4
+                    self.character.cur_fall_speed = self.character.FALL_SPEED
+                    self.character.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False,
+                                                "Left": False, "Escape": False,
+                                                "Enter": False}
                 else:
                     self.character.restart = True
-            elif self.character.state == 10:
+            elif self.character.state == self.character.WIN:
                 self.character.restart = True

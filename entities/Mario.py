@@ -140,19 +140,22 @@ class Mario:
             self.level = 1
             if int(self.grow_lvl) == 2:
                 self.grow_lvl = 2
-                self.state = Mario.IDLE
                 self.cur_frame = 0
+                self.state = Mario.IN_AIR
         elif self.state == Mario.SHRINK:
-            if self.level == 1:
+            if self.level >= 1:
                 self.grow_lvl -= 8 / FPS
                 self.cur_frame = 15
                 if int(self.grow_lvl) == 0:
                     self.level = 0
                     self.grow_lvl = 0
-                    self.state = Mario.IDLE
                     self.y += tile_size * scale
                     self.cur_frame = 0
                     self.cur_img = self.small_img
+                    self.state = Mario.IN_AIR
+            else:
+                self.state = Mario.DEAD
+                self.pause = True
 
     def render(self):
         img = Mario.IMAGE.subsurface(self.cur_img[int(self.cur_frame)][0])

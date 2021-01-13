@@ -13,15 +13,16 @@ class HiddenBox(Box):
         self.x, self.y = x, y
         self.cur_frame = 0
         self.state = Box.NOT_OPENED
-        self.has_coin = random.choice([True, False])
-        self.coin_img = []
-        if self.has_coin:
-            t = t["coin-in-box"]
+        self.has_item = random.choice([True, False])
+        self.item_type = Box.ITEM_COIN
+        self.item_img = []
+        self.item_name = "coin-in-box"
+        if self.has_item:
+            t = t[self.item_name]
             img = pygame.image.load(t[0])
             for i in t[2]:
-                self.coin_img.append(pygame.transform.scale(img.subsurface(i['x'], i['y'], t[1][0], t[1][1]),
+                self.item_img.append(pygame.transform.scale(img.subsurface(i['x'], i['y'], t[1][0], t[1][1]),
                                                             (t[1][0] * scale, t[1][1] * scale)))
-
-        self.coin_img_idx = 0
+        self.item_img_idx = 0
         self.w, self.h = tile_size * scale, tile_size * scale
         self.triggered = False
