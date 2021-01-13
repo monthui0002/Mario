@@ -40,12 +40,13 @@ class Mario:
     FALL_SPEED = 0
     IMAGE = pygame.image.load("./img/mario.png")
 
-    def __init__(self, x, y, direction, level, state, screen, background, play_lvl):
+    def __init__(self, x, y, direction, level, state, screen, background, play_lvl, sound_player):
         self.x, self.y = x, y
         self.small_img, self.big_img = load_img()
         self.direction = direction
         self.level = level
         self.play_lvl = play_lvl
+        self.sound_player = sound_player
         self.state = state
         self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False,
                           "Enter": False}
@@ -53,11 +54,11 @@ class Mario:
         self.cur_frame = 0
         self.cur_fall_speed = Mario.FALL_SPEED
         self.cur_img = self.small_img if self.level == 0 else self.big_img
-        self.grow_lvl = 0
+        self.grow_lvl = 0 if self.level == 0 else 2
         self.pause = False
         self.restart = False
         self.dashboard = Dashboard(self.screen, play_lvl.name)
-        self.pauseObject = Pause(self.screen, self, self.dashboard)
+        self.pause_obj = Pause(self.screen, self, self.dashboard)
         self.background = background
 
     def get_input(self):
@@ -81,6 +82,7 @@ class Mario:
                 self.state = Mario.SHRINK
 
         if self.key_input["Enter"]:
+            self.sound_player.bg_sound.pause_sound()
             self.pause = True
             self.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False, "Left": False,
                               "Escape": False, "Enter": False}
@@ -89,6 +91,8 @@ class Mario:
             self.restart = True
 
         if self.key_input["Up"] and self.state != Mario.IN_AIR:
+            if self.sound_player.allow_sound:
+                self.sound_player.jump_sound.play_sound()
             self.cur_fall_speed = -6 * scale
             self.state = Mario.IN_AIR
 
@@ -126,22 +130,26 @@ class Mario:
             else:
                 self.play_lvl.check_collision_top(self)
             if self.y + (self.level + 1) * tile_size * scale >= h:
+                if self.sound_player.allow_sound:
+                    self.sound_player.death_sound.play_sound()
+                    self.sound_player.bg_sound.stop_sound()
                 self.state = Mario.DEAD
                 self.y = h - (self.level + 1) * tile_size * scale
                 self.pause = True
         elif self.state == Mario.SWIM:
             pass
-        elif self.state == Mario.GROW and self.grow_lvl < 2:
-            if self.grow_lvl == 0:
-                self.y -= tile_size * scale
-            self.grow_lvl += 8 / FPS
-            self.cur_img = self.big_img
-            self.cur_frame = 15
-            self.level = 1
-            if int(self.grow_lvl) == 2:
-                self.grow_lvl = 2
-                self.cur_frame = 0
-                self.state = Mario.IN_AIR
+        elif self.state == Mario.GROW:
+            if self.grow_lvl < 2:
+                if self.grow_lvl == 0:
+                    self.y -= tile_size * scale
+                self.grow_lvl += 8 / FPS
+                self.cur_img = self.big_img
+                self.cur_frame = 15
+                self.level = 1
+                if int(self.grow_lvl) == 2:
+                    self.grow_lvl = 2
+                    self.cur_frame = 0
+                    self.state = Mario.IN_AIR
         elif self.state == Mario.SHRINK:
             if self.level >= 1:
                 self.grow_lvl -= 8 / FPS
@@ -156,6 +164,9 @@ class Mario:
             else:
                 self.state = Mario.DEAD
                 self.pause = True
+                if self.sound_player.allow_sound:
+                    self.sound_player.death_sound.play_sound()
+                    self.sound_player.bg_sound.stop_sound()
 
     def render(self):
         img = Mario.IMAGE.subsurface(self.cur_img[int(self.cur_frame)][0])

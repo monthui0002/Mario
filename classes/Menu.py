@@ -47,8 +47,9 @@ class Menu:
     INSETTING = 2
     EXIT = 3
 
-    def __init__(self, screen):
+    def __init__(self, screen, sound_player):
         self.screen = screen
+        self.sound_player = sound_player
         self.dashboard = Dashboard(screen)
         self.dashboard.state = "menu"
         self.key_input = {"Enter": False, "Up": False, "Right": False, "Down": False, "Left": False, "Escape": False}
@@ -56,6 +57,7 @@ class Menu:
         self.cur_img = 1
         self.state = self.MENU
         self.music = load_setting()
+        self.sound_player.allow_sound = self.music
         self.level = 1
         self.level_name = ""
 
@@ -138,6 +140,7 @@ class Menu:
             elif self.state == self.INSETTING:
                 if self.cur_img == 1:
                     self.music = not self.music
+                    self.sound_player.allow_sound = self.music
                 else:
                     self.state = self.MENU
                     self.save_setting()

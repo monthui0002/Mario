@@ -13,7 +13,7 @@ class HiddenBox(Box):
         self.x, self.y = x, y
         self.cur_frame = 0
         self.state = Box.NOT_OPENED
-        self.has_item = random.choice([True, False])
+        self.has_item = random.choice([True, False, False])
         self.item_type = Box.ITEM_COIN
         self.item_img = []
         self.item_name = "coin-in-box"

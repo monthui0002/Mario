@@ -202,12 +202,18 @@ class Level:
                         item.has_item = False
                         if item.item_type == Box.ITEM_COIN:
                             character.dashboard.coins += 1
+                            if character.sound_player.allow_sound:
+                                character.sound_player.coin_sound.play_sound()
                         elif item.item_type == Box.ITEM_MUSHROOM:
                             character.key_input["Up"] = False
                             if character.level < 1:
+                                if character.sound_player.allow_sound:
+                                    character.sound_player.grow_up_sound.play_sound()
                                 character.state = Mario.GROW
                         elif item.item_type == Box.ITEM_MINE:
                             character.key_input["Up"] = False
+                            if character.sound_player.allow_sound:
+                                character.sound_player.mine_sound.play_sound()
                             character.state = Mario.SHRINK
                         item.triggered = True
                     item.cur_frame = len(item.img) - 1

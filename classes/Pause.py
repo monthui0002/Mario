@@ -39,12 +39,21 @@ class Pause:
                     self.dashboard.turn_avail -= 1
                     self.character.x = 0
                     self.character.y = 0
-                    self.character.state = 4
+                    self.character.level = 0
+                    self.character.grow_lvl = 0
+                    self.character.cur_frame = 0
+                    self.character.cur_img = self.character.small_img
+                    self.character.state = self.character.IN_AIR
                     self.character.cur_fall_speed = self.character.FALL_SPEED
                     self.character.key_input = {"KP_Enter": False, "Up": False, "Right": False, "Down": False,
                                                 "Left": False, "Escape": False,
                                                 "Enter": False}
                 else:
                     self.character.restart = True
+                if self.character.sound_player.allow_sound:
+                    self.character.sound_player.bg_sound.play_sound()
             elif self.character.state == self.character.WIN:
                 self.character.restart = True
+            else:
+                if self.character.sound_player.allow_sound:
+                    self.character.sound_player.bg_sound.unpause_sound()
