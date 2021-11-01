@@ -1,5 +1,4 @@
 import pygame
-
 from classes.Constants import *
 from classes.Dashboard import Dashboard
 from classes.Input import get
@@ -171,7 +170,7 @@ class Mario:
     def render(self):
         img = Mario.IMAGE.subsurface(self.cur_img[int(self.cur_frame)][0])
         if self.direction == Mario.DIRECTION_LEFT:
-            img = pygame.transform.flip(img, True, False)
+           img = pygame.transform.flip(img, True, False)
         if self.x <= (w - tile_size * scale) / 2:
             pos_x = self.x
         elif self.x + (w + tile_size * scale) / 2 >= self.background.w:
