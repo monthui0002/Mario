@@ -1,56 +1,60 @@
-import pygame, json
-
-from classes.Tile import Tile
-tile_size = 16
-scale = 2
-window_size = (25*tile_size*scale, 14*tile_size*scale)
-
-tiles = Tile().tiles
-pygame.display.set_caption('MARIO')
+from classes.Constants import *
+from entities.Mario import Mario
 
 
 class Background:
-    def __init__(self, x, y):
+    DIRECTION_LEFT = 0
+    DIRECTION_RIGHT = 1
+    DIRECTION_UP = 2
+    DIRECTION_DOWN = 3
+
+    def __init__(self, x, y, screen, level):
         self.x = x
         self.y = y
-        self.map, self.map_size = self.addMaps([
-            "./levels/map1.json",
-        ])
-        self.index = 1  # defaul map = 1
-        self.images = self.loadMaps()
+        self.level = level
+        self.w, self.h = level.map_size[0], level.map_size[1]
+        self.screen = screen
+        self.character = None
 
-    def addMaps(self, urlListMap):
-        dic = {}
-        map_size = [(0, 0)]  # map 0 deo co
-        for url in urlListMap:
-            with open(url) as jsonData:
-                map = json.load(jsonData)
-                map_size.append((map['length-x'], map['length-y']))
-                listObject = map['object']
-                for objects in listObject:
-                    for object in listObject[objects]:
-                        dic[object] = listObject[objects][object]
-        return dic, map_size  # dic{"name_tiles" : [position in map]}
+    def set_character(self, c):
+        self.character = c
 
-    def loadMaps(self):
-        print(tiles)
-        print(self.map)
-        load_images = {}
-        # img = pygame.image.load("./img/Tileset.png")
-        for i in self.map:
-            img = pygame.image.load(tiles[i][0])
-            img = img.subsurface(tiles[i][1], tiles[i][2], tiles[i][3][0], tiles[i][3][1])
-            load_images[i] = pygame.transform.scale(img, (tiles[i][3][0]*scale, tiles[i][3][1]*scale))
-        return load_images  # dictionary{"name_tiles" : img}
+    def update(self):
+        self.update_camera()
+        self.level.update(self.x, self.y)
 
-    def update(self, screen, player):
-        x_camera = player.x - (window_size[0] - tile_size*scale) / 2
+    def update_camera(self):
+        x_camera = self.character.x - (w - tile_size * scale) / 2
         if x_camera < 0:
             x_camera = 0
-        if x_camera + window_size[0] >= self.map_size[self.index][0] * scale:
-            x_camera = self.map_size[self.index][0]*scale - window_size[0]
+        if x_camera + w >= self.w:
+            x_camera = self.w - w
         self.x = -x_camera
-        for tiles_name in self.map:
-            for i in self.map[tiles_name]:
-                screen.blit(self.images[tiles_name], (i[0]*scale + self.x, i[1]*scale + self.y))
-    # def update(self, screen):
+
+    def rect_collision(self, list_rect):
+        size = tile_size * scale
+        rect1 = [self.character.x, self.character.y, size, size * (2 if self.character.level == 1 else 1)]
+        direction = Background.DIRECTION_UP
+        for rect2 in list_rect:
+            if rect1[0] <= rect2[0] * size + rect2[2] * size and rect2[0] * size <= rect1[0] + rect1[2] and rect1[1] <= \
+                    rect2[1] * size + rect2[3] * size and \
+                    rect2[1] * size <= rect1[1] + rect1[3]:
+                if self.character.cur_fall_speed > 0:
+                    self.character.cur_fall_speed = 0
+                    direction = Background.DIRECTION_UP
+                elif self.character.cur_fall_speed < 0:
+                    direction = Background.DIRECTION_DOWN
+                elif self.character.direction == Mario.DIRECTION_LEFT:
+                    direction = Background.DIRECTION_LEFT
+                else:
+                    direction = Background.DIRECTION_RIGHT
+                return True, rect2, direction
+        return False, [], direction
+
+    def check_out_range(self):
+        if self.character.x < 0:
+            self.character.x = 0
+        if self.character.x >= self.level.map['background']['flag'][0][0] * tile_size * scale:
+            self.character.state = Mario.WIN
+            self.character.x = self.level.map['background']['flag'][0][0] * tile_size * scale
+            self.character.pause = True

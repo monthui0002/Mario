@@ -1,0 +1,25 @@
+{
+    "image_url": "./img/items.png",
+    "type": "static_items",
+    "sprites": [
+        {
+            "name": "ladder1",
+            "x": 63,
+            "y": 129,
+            "size": [8,8]
+        },
+        {
+            "name": "ladder2",
+            "x": 71,
+            "y": 129,
+            "size": [8,8]
+        },
+        {
+            "name": "flag",
+            "x": 128,
+            "y": 32,
+            "size": [16,16]
+        }
+
+    ]
+}
